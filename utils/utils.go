@@ -1,11 +1,14 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"sort"
+	"strconv"
+	"strings"
 )
 
-func ParseTxtFile(filename string) string {
+func ParseFileToString(filename string) string {
 	fileContent, err := os.ReadFile(filename)
 	if err != nil {
 		panic(err)
@@ -23,9 +26,17 @@ func Max(list []int) (max int) {
 	return max
 }
 
-func MaxN(list []int, n int) (maxN []int) {
-	sort.Ints(list)
+func FirstN(list []int, n int) []int {
+	return list[:len(list)-n]
+}
+
+func LastN(list []int, n int) []int {
 	return list[len(list)-n:]
+}
+
+func MaxN(list []int, n int) []int {
+	sort.Ints(list)
+	return LastN(list, n)
 }
 
 func Sum(list []int) (sum int) {
@@ -48,4 +59,19 @@ func Reduce[T, U any](list []T, f func(U, T) U, initValue U) U {
 		reduced = f(reduced, value)
 	}
 	return reduced
+}
+
+func ParseStringToIntList(text string, separator string) []int {
+	return Map(strings.Split(text, separator), func(s string) int {
+		num, _ := strconv.ParseInt(s, 10, 0)
+		return int(num)
+	})
+}
+
+func AssertEqual[T comparable](input1 T, input2 T, message string) {
+	if input1 == input2 {
+		fmt.Println(message, "succeeded !")
+	} else {
+		fmt.Println(message, "failed...", "output:", input1, "expected:", input2)
+	}
 }

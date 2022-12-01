@@ -3,29 +3,31 @@ package main
 import (
 	"adventofcode/utils"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
-func getSums(input string) []int {
+func CalorieCounter(input string) []int {
 	return utils.Map(strings.Split(input, "\n\n"), func(s string) int {
-		return utils.Sum(utils.Map(strings.Split(s, "\n"), func(s string) int {
-			num, _ := strconv.ParseInt(s, 10, 0)
-			return int(num)
-		}))
+		return utils.Sum(utils.ParseStringToIntList(s, "\n"))
 	})
 }
 
 func step1(input string) int {
-	return utils.Max(getSums(input))
+	return utils.Max(CalorieCounter(input))
 }
 
 func step2(input string) int {
-	return utils.Sum(utils.MaxN(getSums(input), 3))
+	return utils.Sum(utils.MaxN(CalorieCounter(input), 3))
 }
 
 func main() {
-	input := utils.ParseTxtFile("2022/day01/input.txt")
-	fmt.Println("step1: ", step1(input))
-	fmt.Println("step2: ", step2(input))
+	fmt.Println("--- Day 1: Sonar Sweep ---")
+
+	example := utils.ParseFileToString("2022/day01/example.txt")
+	utils.AssertEqual(step1(example), 24000, "example step1")
+	utils.AssertEqual(step2(example), 45000, "example step2")
+
+	input := utils.ParseFileToString("2022/day01/input.txt")
+	utils.AssertEqual(step1(input), 71300, "step1")
+	utils.AssertEqual(step2(input), 209691, "step2")
 }

@@ -3,33 +3,37 @@ package main
 import (
 	"adventofcode/utils"
 	"fmt"
-	"strconv"
-	"strings"
 )
 
-func parseIntListFromString(text string, separator string) []int {
-	return utils.Map(strings.Split(text, separator), func(s string) int {
-		num, _ := strconv.ParseInt(s, 10, 0)
-		return int(num)
-	})
-}
-
-func step1(input string) (increment int) {
+func SonarSweep(input string, n int) (increment int) {
+	list := utils.ParseStringToIntList(input, "\n")
 	increment = 0
-	list := parseIntListFromString(input, "\n")
-	for index, value := range list {
-		if index != 0 && value > list[index-1] {
-			increment += 1
+	for index, _ := range list {
+		if index > 0 && index < len(list)-n+1 {
+			if utils.Sum(list[index:index+n]) > utils.Sum(list[index-1:index+n-1]) {
+				increment += 1
+			}
 		}
 	}
 	return increment
 }
 
+func step1(input string) int {
+	return SonarSweep(input, 1)
+}
+
+func step2(input string) int {
+	return SonarSweep(input, 3)
+}
+
 func main() {
-	example := utils.ParseTxtFile("2021/day01/example.txt")
-	input := utils.ParseTxtFile("2021/day01/input.txt")
-	fmt.Println("step1 example: ", step1(example))
-	fmt.Println("step1: ", step1(input))
-	//fmt.Println("step2 example: ", step2(example))
-	//fmt.Println("step2: ", step2(input))
+	fmt.Println("--- Day 1: Calorie Counting ---")
+
+	example := utils.ParseFileToString("2021/day01/example.txt")
+	utils.AssertEqual(step1(example), 7, "example step1")
+	utils.AssertEqual(step2(example), 5, "example step2")
+
+	input := utils.ParseFileToString("2021/day01/input.txt")
+	utils.AssertEqual(step1(input), 1387, "step1")
+	utils.AssertEqual(step2(input), 1362, "step2")
 }
