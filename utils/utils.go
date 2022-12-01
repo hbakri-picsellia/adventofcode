@@ -61,11 +61,13 @@ func Reduce[T, U any](list []T, f func(U, T) U, initValue U) U {
 	return reduced
 }
 
+func ParseStringToInt(s string) int {
+	num, _ := strconv.ParseInt(s, 10, 0)
+	return int(num)
+}
+
 func ParseStringToIntList(text string, separator string) []int {
-	return Map(strings.Split(text, separator), func(s string) int {
-		num, _ := strconv.ParseInt(s, 10, 0)
-		return int(num)
-	})
+	return Map(strings.Split(text, separator), ParseStringToInt)
 }
 
 func AssertEqual[T comparable](input1 T, input2 T, message string) {
