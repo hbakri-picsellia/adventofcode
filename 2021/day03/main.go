@@ -22,7 +22,7 @@ func BinaryDiagnostic(input string) []float32 {
 		})
 }
 
-func GammaRate(binaryDiagnostic []float32) string {
+func gammaRate(binaryDiagnostic []float32) string {
 	return strings.Join(utils.Map(binaryDiagnostic, func(frequency float32) string {
 		result := 0
 		if frequency > 0.5 {
@@ -32,7 +32,7 @@ func GammaRate(binaryDiagnostic []float32) string {
 	}), "")
 }
 
-func EpsilonRate(binaryDiagnostic []float32) string {
+func epsilonRate(binaryDiagnostic []float32) string {
 	return strings.Join(utils.Map(binaryDiagnostic, func(frequency float32) string {
 		result := 0
 		if frequency < 0.5 {
@@ -43,8 +43,8 @@ func EpsilonRate(binaryDiagnostic []float32) string {
 }
 
 func step1(input string) int {
-	gamma, _ := strconv.ParseInt(GammaRate(BinaryDiagnostic(input)), 2, 0)
-	epsilon, _ := strconv.ParseInt(EpsilonRate(BinaryDiagnostic(input)), 2, 0)
+	gamma, _ := strconv.ParseInt(gammaRate(BinaryDiagnostic(input)), 2, 0)
+	epsilon, _ := strconv.ParseInt(epsilonRate(BinaryDiagnostic(input)), 2, 0)
 	return int(gamma * epsilon)
 }
 
@@ -57,9 +57,9 @@ func main() {
 
 	example := utils.ParseFileToString("2021/day03/example.txt")
 	utils.AssertEqual(step1(example), 198, "example step1")
-	//utils.AssertEqual(step2(example), 900, "example step2")
+	utils.AssertEqual(step2(example), 230, "example step2")
 
 	input := utils.ParseFileToString("2021/day03/input.txt")
-	utils.AssertEqual(step1(input), 1648020, "step1")
+	utils.AssertEqual(step1(input), 3549854, "step1")
 	//utils.AssertEqual(step2(input), 1759818555, "step2")
 }

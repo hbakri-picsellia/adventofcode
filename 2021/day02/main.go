@@ -12,41 +12,47 @@ const (
 	Up             = "up"
 )
 
-func Dive(input string, f func(string, int, *int, *int, *int)) int {
+type SubmarinePosition struct {
+	horizontal int
+	depth      int
+	aim        int
+}
+
+func Dive(input string, f func(string, int, *SubmarinePosition)) int {
 	instructions := strings.Split(input, "\n")
-	horizontal, depth, aim := 0, 0, 0
+	position := SubmarinePosition{}
 	for _, value := range instructions {
 		instruction := strings.Split(value, " ")
 		direction := instruction[0]
 		number := utils.ParseStringToInt(instruction[1])
-		f(direction, number, &horizontal, &depth, &aim)
+		f(direction, number, &position)
 	}
-	return horizontal * depth
+	return position.horizontal * position.depth
 }
 
 func step1(input string) int {
-	return Dive(input, func(direction string, number int, horizontal *int, depth *int, aim *int) {
+	return Dive(input, func(direction string, number int, position *SubmarinePosition) {
 		switch direction {
 		case Forward:
-			*horizontal += number
+			position.horizontal += number
 		case Down:
-			*depth += number
+			position.depth += number
 		case Up:
-			*depth -= number
+			position.depth -= number
 		}
 	})
 }
 
 func step2(input string) int {
-	return Dive(input, func(direction string, number int, horizontal *int, depth *int, aim *int) {
+	return Dive(input, func(direction string, number int, position *SubmarinePosition) {
 		switch direction {
 		case Forward:
-			*horizontal += number
-			*depth += *aim * number
+			position.horizontal += number
+			position.depth += position.aim * number
 		case Down:
-			*aim += number
+			position.aim += number
 		case Up:
-			*aim -= number
+			position.aim -= number
 		}
 	})
 }
