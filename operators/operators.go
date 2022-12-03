@@ -1,6 +1,8 @@
 package operators
 
-import "math"
+import (
+	"math"
+)
 
 func ForEach[T any](list []T, f func(int, T)) {
 	for index, value := range list {
@@ -22,6 +24,16 @@ func Reduce[T, U any](acc []T, f func(U, T) U, initValue U) U {
 		reduced = f(reduced, value)
 	}
 	return reduced
+}
+
+func Filter[T any](list []T, f func(T) bool) []T {
+	return Reduce(list, func(acc []T, current T) []T {
+		if f(current) {
+			return append(acc, current)
+		} else {
+			return acc
+		}
+	}, []T{})
 }
 
 func Max(list []int) int {
@@ -51,7 +63,7 @@ func Chunk[T any](slice []T, chunkSize int) [][]T {
 	return chunks
 }
 
-func Intersection[T comparable](list1 []T, list2 []T) (sharedElements []T) {
+func Intersection[T comparable](list1, list2 []T) (sharedElements []T) {
 	m := make(map[T]bool)
 	ForEach(list1, func(_ int, value T) {
 		m[value] = true
@@ -62,4 +74,16 @@ func Intersection[T comparable](list1 []T, list2 []T) (sharedElements []T) {
 		}
 	})
 	return sharedElements
+}
+
+type numeric interface {
+	int | int8 | int16 | int32 | int64 | float32 | float64
+}
+
+func Add[T numeric](list1, list2 []T) []T {
+	sum := make([]T, len(list1))
+	for index, _ := range list1 {
+		sum[index] = list1[index] + list2[index]
+	}
+	return sum
 }

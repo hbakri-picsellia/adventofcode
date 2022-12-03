@@ -10,9 +10,9 @@ import (
 
 func getLetterPriority(char rune) int {
 	if unicode.IsLower(char) {
-		return int(char) - 'a' + 1
+		return int(char - 'a' + 1)
 	} else {
-		return int(char) - 'A' + 27
+		return int(char - 'A' + 27)
 	}
 }
 
