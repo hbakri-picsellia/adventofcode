@@ -1,6 +1,7 @@
 package main
 
 import (
+	"adventofcode/operators"
 	"adventofcode/utils"
 	"fmt"
 )
@@ -10,7 +11,7 @@ func SonarSweep(input string, n int) (increment int) {
 	increment = 0
 	for index, _ := range list {
 		if index > 0 && index < len(list)-n+1 {
-			if utils.Sum(list[index:index+n]) > utils.Sum(list[index-1:index+n-1]) {
+			if operators.Sum(list[index:index+n]) > operators.Sum(list[index-1:index+n-1]) {
 				increment += 1
 			}
 		}

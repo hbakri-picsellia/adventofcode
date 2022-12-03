@@ -1,23 +1,30 @@
 package main
 
 import (
+	"adventofcode/operators"
 	"adventofcode/utils"
 	"fmt"
+	"sort"
 	"strings"
 )
 
+func getMaxN(list []int, n int) []int {
+	sort.Ints(list)
+	return list[len(list)-n:]
+}
+
 func CalorieCounter(input string) []int {
-	return utils.Map(strings.Split(input, "\n\n"), func(s string) int {
-		return utils.Sum(utils.ParseStringToIntList(s, "\n"))
+	return operators.Map(strings.Split(input, "\n\n"), func(s string) int {
+		return operators.Sum(utils.ParseStringToIntList(s, "\n"))
 	})
 }
 
 func step1(input string) int {
-	return utils.Max(CalorieCounter(input))
+	return operators.Max(CalorieCounter(input))
 }
 
 func step2(input string) int {
-	return utils.Sum(utils.MaxN(CalorieCounter(input), 3))
+	return operators.Sum(getMaxN(CalorieCounter(input), 3))
 }
 
 func main() {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"adventofcode/operators"
 	"adventofcode/utils"
 	"fmt"
 	"strconv"
@@ -10,8 +11,8 @@ import (
 func BinaryDiagnostic(input string) []float32 {
 	list := strings.Split(input, "\n")
 	nbBinaryNumbers := len(list)
-	return utils.Map(
-		utils.Reduce(list, func(reduced []int, value string) []int {
+	return operators.Map(
+		operators.Reduce(list, func(reduced []int, value string) []int {
 			binaryNumber := utils.ParseStringToIntList(value, "")
 			for index, _ := range reduced {
 				reduced[index] += binaryNumber[index]
@@ -23,7 +24,7 @@ func BinaryDiagnostic(input string) []float32 {
 }
 
 func gammaRate(binaryDiagnostic []float32) string {
-	return strings.Join(utils.Map(binaryDiagnostic, func(frequency float32) string {
+	return strings.Join(operators.Map(binaryDiagnostic, func(frequency float32) string {
 		result := 0
 		if frequency > 0.5 {
 			result = 1
@@ -33,7 +34,7 @@ func gammaRate(binaryDiagnostic []float32) string {
 }
 
 func epsilonRate(binaryDiagnostic []float32) string {
-	return strings.Join(utils.Map(binaryDiagnostic, func(frequency float32) string {
+	return strings.Join(operators.Map(binaryDiagnostic, func(frequency float32) string {
 		result := 0
 		if frequency < 0.5 {
 			result = 1
