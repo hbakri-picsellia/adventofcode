@@ -61,7 +61,7 @@ func oxygenGeneratorRate(binaryNumbers []string) string {
 	})
 }
 
-func CO2ScrubberRate(binaryNumbers []string) string {
+func co2ScrubberRate(binaryNumbers []string) string {
 	return bitCriteria(binaryNumbers, func(binaryNumbers []string) string {
 		return epsilonRate(BinaryDiagnostic(binaryNumbers))
 	})
@@ -78,8 +78,8 @@ func step1(input string) int {
 func step2(input string) int {
 	binaryNumbers := strings.Split(input, "\n")
 	oxygenGenerator := rateToDecimal(oxygenGeneratorRate(binaryNumbers))
-	CO2Scrubber := rateToDecimal(CO2ScrubberRate(binaryNumbers))
-	return oxygenGenerator * CO2Scrubber
+	co2Scrubber := rateToDecimal(co2ScrubberRate(binaryNumbers))
+	return oxygenGenerator * co2Scrubber
 }
 
 func main() {
