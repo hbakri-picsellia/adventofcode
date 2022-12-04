@@ -1,17 +1,17 @@
 package main
 
 import (
-	"adventofcode/2021/day04/board"
+	"adventofcode/2021/day04/models"
 	"adventofcode/operators"
 	"adventofcode/utils"
 	"fmt"
 	"strings"
 )
 
-func getNumbersAndBoards(input string) ([]int, []board.Board) {
+func getNumbersAndBoards(input string) ([]int, []models.Board) {
 	inputs := strings.Split(input, "\n\n")
 	numbers := operators.Map(strings.Split(inputs[0], ","), utils.ParseStringToInt)
-	boards := make([]board.Board, len(inputs)-1)
+	boards := make([]models.Board, len(inputs)-1)
 	for index, boardInput := range inputs[1:] {
 		boards[index].Init(boardInput)
 	}
@@ -26,7 +26,7 @@ func GiantSquid(input string) (scores []int) {
 				boards[index].MarkNumber(number)
 				if boards[index].HasBingo() {
 					scores = append(scores, number*boards[index].SumUnmarkedNumbers())
-					boards[index].Finished()
+					boards[index].MarkAsFinished()
 				}
 			}
 		}

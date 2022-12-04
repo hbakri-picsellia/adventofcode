@@ -1,4 +1,4 @@
-package board
+package models
 
 import (
 	"adventofcode/operators"
@@ -61,6 +61,6 @@ func (board *Board) HasBingo() bool {
 	return board.hasHorizontalBingo() || board.hasVerticalBingo()
 }
 
-func (board *Board) Finished() {
+func (board *Board) MarkAsFinished() {
 	board.IsFinished = true
 }
