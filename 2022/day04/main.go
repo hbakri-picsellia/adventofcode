@@ -11,24 +11,20 @@ func getSections(assignment string) []int {
 	return operators.Map(strings.Split(assignment, "-"), utils.ParseStringToInt)
 }
 
-func fullyContains(assignment1 string, assignment2 string) bool {
-	sections1 := getSections(assignment1)
-	sections2 := getSections(assignment2)
+func fullyContains(sections1 []int, sections2 []int) bool {
 	return sections1[0] <= sections2[0] && sections1[1] >= sections2[1]
 }
 
-func overlapAtAll(assignment1 string, assignment2 string) bool {
-	sections1 := getSections(assignment1)
-	sections2 := getSections(assignment2)
+func overlapAtAll(sections1 []int, sections2 []int) bool {
 	return sections1[0] <= sections2[0] && sections1[1] >= sections2[0]
 }
 
-func CampCleanup(input string, f func(string, string) bool) int {
+func CampCleanup(input string, f func([]int, []int) bool) int {
 	assignmentPairs := strings.Split(input, "\n")
 	return operators.Reduce(operators.Map(assignmentPairs, func(assignmentPair string) bool {
-		assignment1 := strings.Split(assignmentPair, ",")[0]
-		assignment2 := strings.Split(assignmentPair, ",")[1]
-		return f(assignment1, assignment2) || f(assignment2, assignment1)
+		sections1 := getSections(strings.Split(assignmentPair, ",")[0])
+		sections2 := getSections(strings.Split(assignmentPair, ",")[1])
+		return f(sections1, sections2) || f(sections2, sections1)
 	}), func(acc int, t bool) int {
 		return acc + utils.BoolToInt(t)
 	}, 0)

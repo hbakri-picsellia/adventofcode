@@ -4,9 +4,9 @@ import (
 	"math"
 )
 
-func ForEach[T any](list []T, f func(int, T)) {
-	for index, value := range list {
-		f(index, value)
+func ForEach[T any](list []T, f func(T)) {
+	for index := range list {
+		f(list[index])
 	}
 }
 
@@ -34,6 +34,19 @@ func Filter[T any](list []T, f func(T) bool) []T {
 			return acc
 		}
 	}, []T{})
+}
+
+func FindIndex[T any](list []T, f func(T) bool) int {
+	for index, value := range list {
+		if f(value) {
+			return index
+		}
+	}
+	return -1
+}
+
+func Any[T any](list []T, f func(T) bool) bool {
+	return FindIndex(list, f) >= 0
 }
 
 func Max(list []int) int {
@@ -65,10 +78,10 @@ func Chunk[T any](slice []T, chunkSize int) [][]T {
 
 func Intersection[T comparable](list1, list2 []T) (sharedElements []T) {
 	m := make(map[T]bool)
-	ForEach(list1, func(_ int, value T) {
+	ForEach(list1, func(value T) {
 		m[value] = true
 	})
-	ForEach(list2, func(_ int, value T) {
+	ForEach(list2, func(value T) {
 		if m[value] {
 			sharedElements = append(sharedElements, value)
 		}
