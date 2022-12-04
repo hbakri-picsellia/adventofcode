@@ -32,3 +32,10 @@ func AssertEqual[T comparable](input1 T, input2 T, message string) {
 		fmt.Println(message, "failed...", "output:", input1, "expected:", input2)
 	}
 }
+
+func BoolToInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
