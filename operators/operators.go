@@ -26,6 +26,14 @@ func Reduce[T, U any](acc []T, f func(U, T) U, initValue U) U {
 	return reduced
 }
 
+func ReduceRight[T, U any](acc []T, f func(U, T) U, initValue U) U {
+	reduced := initValue
+	for i := len(acc) - 1; i >= 0; i-- {
+		reduced = f(reduced, acc[i])
+	}
+	return reduced
+}
+
 func Filter[T any](list []T, f func(T) bool) []T {
 	return Reduce(list, func(acc []T, current T) []T {
 		if f(current) {
