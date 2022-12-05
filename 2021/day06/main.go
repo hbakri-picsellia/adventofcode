@@ -5,12 +5,11 @@ import (
 	"adventofcode/utils"
 	"fmt"
 	"strings"
-	"time"
 )
 
-func RecursiveLanternfish(arr []int, nbDays int) []int {
+func RecursiveLanternfish(arr []int, nbDays int) int {
 	if nbDays == 0 {
-		return arr
+		return len(arr)
 	}
 	nbNewElements := 0
 	for index, _ := range arr {
@@ -27,43 +26,35 @@ func RecursiveLanternfish(arr []int, nbDays int) []int {
 	return RecursiveLanternfish(arr, nbDays-1)
 }
 
-func IterativeLanternfish(arr []int, nbDays int) []int {
-	for {
-		if nbDays == 0 {
-			return arr
-		}
-		nbNewElements := 0
-		for index, _ := range arr {
-			if arr[index] == 0 {
-				nbNewElements += 1
-				arr[index] = 6
-			} else {
-				arr[index] -= 1
-			}
-		}
-		for i := 0; i < nbNewElements; i++ {
-			arr = append(arr, 8)
-		}
-		nbDays--
+func IterativeLanternfish(arr []int, nbDays int) (sum int) {
+	lanternFishes := make(map[int]int, 9)
+	for _, value := range arr {
+		lanternFishes[value] += 1
 	}
+
+	nbNewLanternFishes := 0
+	for day := 0; day < nbDays; day++ {
+		nbNewLanternFishes = lanternFishes[0]
+		for index := 1; index <= 8; index++ {
+			lanternFishes[index-1] = lanternFishes[index]
+		}
+		lanternFishes[6] += nbNewLanternFishes
+		lanternFishes[8] = nbNewLanternFishes
+	}
+	for _, value := range lanternFishes {
+		sum += value
+	}
+	return sum
 }
 
 func step1(input string) int {
-	start := time.Now()
-	value := len(RecursiveLanternfish(
-		operators.Map(strings.Split(input, ","), utils.ParseStringToInt), 80),
-	)
-	fmt.Println("step1", time.Since(start))
-	return value
+	initialState := operators.Map(strings.Split(input, ","), utils.ParseStringToInt)
+	return RecursiveLanternfish(initialState, 80)
 }
 
 func step2(input string) int {
-	start := time.Now()
-	value := len(IterativeLanternfish(
-		operators.Map(strings.Split(input, ","), utils.ParseStringToInt), 80),
-	)
-	fmt.Println("step2", time.Since(start))
-	return value
+	initialState := operators.Map(strings.Split(input, ","), utils.ParseStringToInt)
+	return IterativeLanternfish(initialState, 256)
 }
 
 func main() {
@@ -76,5 +67,5 @@ func main() {
 
 	input := utils.ParseFileToString(day + "input.txt")
 	utils.AssertEqual(step1(input), 371379, "step1")
-	utils.AssertEqual(step2(input), -1, "step2")
+	utils.AssertEqual(step2(input), 1674303997472, "step2")
 }

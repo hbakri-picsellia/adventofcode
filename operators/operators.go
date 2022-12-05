@@ -60,7 +60,13 @@ func Any[T any](list []T, f func(T) bool) bool {
 func Max(list []int) int {
 	return Reduce(list, func(acc, current int) int {
 		return int(math.Max(float64(acc), float64(current)))
-	}, 0)
+	}, math.MinInt)
+}
+
+func Min(list []int) int {
+	return Reduce(list, func(acc, current int) int {
+		return int(math.Min(float64(acc), float64(current)))
+	}, math.MaxInt)
 }
 
 func Sum(list []int) int {
