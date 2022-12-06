@@ -26,14 +26,6 @@ func Reduce[T, U any](acc []T, f func(U, T) U, initValue U) U {
 	return reduced
 }
 
-func ReduceRight[T, U any](acc []T, f func(U, T) U, initValue U) U {
-	reduced := initValue
-	for i := len(acc) - 1; i >= 0; i-- {
-		reduced = f(reduced, acc[i])
-	}
-	return reduced
-}
-
 func Filter[T any](list []T, f func(T) bool) []T {
 	return Reduce(list, func(acc []T, current T) []T {
 		if f(current) {
@@ -113,4 +105,16 @@ func Add[T numeric](list1, list2 []T) []T {
 		sum[index] = list1[index] + list2[index]
 	}
 	return sum
+}
+
+func HasDuplicates[T comparable](arr []T) bool {
+	visited := make(map[T]bool, 0)
+	for i := 0; i < len(arr); i++ {
+		if visited[arr[i]] == true {
+			return true
+		} else {
+			visited[arr[i]] = true
+		}
+	}
+	return false
 }
