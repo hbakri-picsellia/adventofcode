@@ -25,3 +25,7 @@ func (matrix *Matrix) GetColumn(index int) []int {
 		return row[index]
 	})
 }
+
+func (matrix *Matrix) GetDimension() (int, int) {
+	return len(*matrix), len((*matrix)[0])
+}

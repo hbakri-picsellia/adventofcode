@@ -5,34 +5,65 @@ import (
 	"adventofcode/operators"
 	"adventofcode/utils"
 	"fmt"
+	"math"
 )
 
-func remove(slice []int, index int) []int {
-	ret := make([]int, 0)
-	ret = append(ret, slice[:index]...)
-	return append(ret, slice[index+1:]...)
+func reverse[T any](s []T) []T {
+	result := make([]T, len(s))
+	for i := range result {
+		result[i] = s[len(s)-i-1]
+	}
+	return result
 }
 
-func step1(input string) int {
+func getEdges(matrix models.Matrix, i int, j int) [][]int {
+	return [][]int{reverse(matrix.GetRow(i)[:j]), matrix.GetRow(i)[j+1:],
+		reverse(matrix.GetColumn(j)[:i]), matrix.GetColumn(j)[i+1:]}
+}
+
+func IsTreeVisible(matrix models.Matrix, i int, j int) bool {
+	return operators.All(getEdges(matrix, i, j), func(edge []int) bool {
+		return len(edge) > 0 && operators.Any(edge, func(point int) bool {
+			return point >= matrix[i][j]
+		})
+	})
+}
+
+func ScenicScore(matrix models.Matrix, i int, j int) int {
+	return operators.Multiply(operators.Map(getEdges(matrix, i, j), func(edge []int) int {
+		index := operators.FindIndex(edge, func(point int) bool {
+			return point >= matrix[i][j]
+		})
+		if index >= 0 {
+			return index + 1
+		} else {
+			return len(edge)
+		}
+	}))
+}
+
+func step1(input string) (value int) {
 	matrix := models.Matrix{}
 	matrix.Decode(input, "\n", "")
-	fmt.Println(matrix.GetRow(0))
-	fmt.Println(matrix.GetColumn(0))
 	for i, row := range matrix {
 		for j := range row {
-			// condition i>0 and i<nbColumns and same for j, with :
-			anyRow := operators.Any(remove(row, j), func(value int) bool {
-				return value >= matrix[i][j]
-			})
-			//anyColumn :=
-			//	fmt.Println(remove(row, j), "(", i, j, ")", anyRow)
+			if !IsTreeVisible(matrix, i, j) {
+				value++
+			}
 		}
 	}
-	return 0
+	return value
 }
 
-func step2(input string) int {
-	return 0
+func step2(input string) (value int) {
+	matrix := models.Matrix{}
+	matrix.Decode(input, "\n", "")
+	for i, row := range matrix {
+		for j := range row {
+			value = int(math.Max(float64(value), float64(ScenicScore(matrix, i, j))))
+		}
+	}
+	return value
 }
 
 func main() {
@@ -40,10 +71,10 @@ func main() {
 	fmt.Println(title)
 
 	example := utils.ParseFileToString(day + "example.txt")
-	utils.AssertEqual(step1(example), -1, "example step1")
-	//utils.AssertEqual(step2(example), -1, "example step2")
-	//
-	//input := utils.ParseFileToString(day + "input.txt")
-	//utils.AssertEqual(step1(input), -1, "step1")
-	//utils.AssertEqual(step2(input), -1, "step2")
+	utils.AssertEqual(step1(example), 21, "example step1")
+	utils.AssertEqual(step2(example), 8, "example step2")
+
+	input := utils.ParseFileToString(day + "input.txt")
+	utils.AssertEqual(step1(input), 1801, "step1")
+	utils.AssertEqual(step2(input), 209880, "step2")
 }

@@ -49,6 +49,10 @@ func Any[T any](list []T, f func(T) bool) bool {
 	return FindIndex(list, f) >= 0
 }
 
+func All[T any](list []T, f func(T) bool) bool {
+	return len(Filter(list, f)) == len(list)
+}
+
 func Max(list []int) int {
 	return Reduce(list, func(acc, current int) int {
 		return int(math.Max(float64(acc), float64(current)))
@@ -65,6 +69,12 @@ func Sum(list []int) int {
 	return Reduce(list, func(acc, current int) int {
 		return acc + current
 	}, 0)
+}
+
+func Multiply(list []int) int {
+	return Reduce(list, func(acc, current int) int {
+		return acc * current
+	}, 1)
 }
 
 func Chunk[T any](slice []T, chunkSize int) [][]T {

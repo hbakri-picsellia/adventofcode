@@ -21,12 +21,21 @@ func getNbEasyDigits(input string) (value int) {
 	inputDigits := strings.Split(parts[0], " ")
 	outputDigits := strings.Split(parts[1], " ")
 	for _, outputDigit := range outputDigits {
-		isOutputEasyDigit := isEasyDigit(outputDigit)
-		if isOutputEasyDigit {
-			value += utils.BoolToInt(operators.Any(inputDigits, func(inputDigit string) bool {
-				return areSamePattern(inputDigit, outputDigit)
-			}))
-		}
+		value += utils.BoolToInt(operators.Any(inputDigits, func(inputDigit string) bool {
+			return isEasyDigit(outputDigit) && areSamePattern(inputDigit, outputDigit)
+		}))
+	}
+	return value
+}
+
+func getDigits(input string) (value int) {
+	parts := strings.Split(input, " | ")
+	inputDigits := strings.Split(parts[0], " ")
+	outputDigits := strings.Split(parts[1], " ")
+	for _, outputDigit := range outputDigits {
+		value += utils.BoolToInt(operators.Any(inputDigits, func(inputDigit string) bool {
+			return isEasyDigit(outputDigit) && areSamePattern(inputDigit, outputDigit)
+		}))
 	}
 	return value
 }
@@ -45,11 +54,17 @@ func main() {
 	const title, day = "--- Day 8: Seven Segment Search ---", "2021/day08/"
 	fmt.Println(title)
 
-	example := utils.ParseFileToString(day + "example.txt")
-	utils.AssertEqual(step1(example), 26, "example step1")
-	utils.AssertEqual(step2(example), 5353, "example step2")
-
-	input := utils.ParseFileToString(day + "input.txt")
-	utils.AssertEqual(step1(input), 288, "step1")
+	//example := utils.ParseFileToString(day + "example.txt")
+	//utils.AssertEqual(step1(example), 26, "example step1")
+	//utils.AssertEqual(step2(example), 5353, "example step2")
+	//
+	//input := utils.ParseFileToString(day + "input.txt")
+	//utils.AssertEqual(step1(input), 288, "step1")
 	//utils.AssertEqual(step2(input), -1, "step2")
+
+	example := "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"
+	parts := strings.Split(example, " | ")
+	inputDigits := strings.Split(parts[0], " ")
+	outputDigits := strings.Split(parts[1], " ")
+	fmt.Println(inputDigits, outputDigits)
 }
