@@ -1,7 +1,7 @@
 package main
 
 import (
-	"adventofcode/2022/day08/models"
+	"adventofcode/models"
 	"adventofcode/operators"
 	"adventofcode/utils"
 	"fmt"
