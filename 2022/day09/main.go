@@ -5,7 +5,6 @@ import (
 	"adventofcode/operators"
 	"adventofcode/utils"
 	"fmt"
-	"math"
 	"strings"
 )
 
@@ -17,88 +16,28 @@ func parseCommands(input string) []models.Command {
 	})
 }
 
-func step1(input string) int {
+func RopeBridge(input string, ropeSize int) int {
 	commands := parseCommands(input)
-	HeadPosition := models.Point{}
-	TailPosition := models.Point{}
+	knots := make([]models.Point, ropeSize)
 	results := make(map[string]int, 0)
 	for _, command := range commands {
 		for step := 0; step < command.Number; step++ {
-			switch command.Type {
-			case models.Up:
-				HeadPosition.X += 1
-			case models.Down:
-				HeadPosition.X -= 1
-			case models.Right:
-				HeadPosition.Y += 1
-			case models.Left:
-				HeadPosition.Y -= 1
+			knots[0].Move(command)
+			for i := 0; i < len(knots)-1; i++ {
+				knots[i+1].Follow(knots[i])
 			}
-
-			if !TailPosition.IsClose(HeadPosition) {
-				if TailPosition.X == HeadPosition.X {
-					directionY := (HeadPosition.Y - TailPosition.Y) / int(math.Abs(float64(TailPosition.Y-HeadPosition.Y)))
-					TailPosition.Y += directionY
-				} else if TailPosition.Y == HeadPosition.Y {
-					directionX := (HeadPosition.X - TailPosition.X) / int(math.Abs(float64(TailPosition.X-HeadPosition.X)))
-					TailPosition.X += directionX
-				} else {
-					directionX := (HeadPosition.X - TailPosition.X) / int(math.Abs(float64(TailPosition.X-HeadPosition.X)))
-					directionY := (HeadPosition.Y - TailPosition.Y) / int(math.Abs(float64(TailPosition.Y-HeadPosition.Y)))
-					TailPosition.Y += directionY
-					TailPosition.X += directionX
-				}
-			}
-			results[TailPosition.ToString()] += 1
+			results[knots[len(knots)-1].ToString()] += 1
 		}
 	}
 	return len(results)
 }
 
-func nextStep(head, tail *models.Point) {
-	if !tail.IsClose(*head) {
-		if tail.X == head.X {
-			directionY := (head.Y - tail.Y) / int(math.Abs(float64(tail.Y-head.Y)))
-			tail.Y += directionY
-		} else if tail.Y == head.Y {
-			directionX := (head.X - tail.X) / int(math.Abs(float64(tail.X-head.X)))
-			tail.X += directionX
-		} else {
-			directionX := (head.X - tail.X) / int(math.Abs(float64(tail.X-head.X)))
-			directionY := (head.Y - tail.Y) / int(math.Abs(float64(tail.Y-head.Y)))
-			tail.Y += directionY
-			tail.X += directionX
-		}
-	}
+func step1(input string) int {
+	return RopeBridge(input, 2)
 }
 
 func step2(input string) int {
-	commands := parseCommands(input)
-	HeadPosition := models.Point{}
-	SnakePositions := make([]models.Point, 9)
-	results := make(map[string]int, 0)
-	for _, command := range commands {
-		for step := 0; step < command.Number; step++ {
-			switch command.Type {
-			case models.Up:
-				HeadPosition.X += 1
-			case models.Down:
-				HeadPosition.X -= 1
-			case models.Right:
-				HeadPosition.Y += 1
-			case models.Left:
-				HeadPosition.Y -= 1
-			}
-			nextStep(&HeadPosition, &SnakePositions[0])
-			for index := range SnakePositions {
-				if index < len(SnakePositions)-1 {
-					nextStep(&SnakePositions[index], &SnakePositions[index+1])
-				}
-			}
-			results[SnakePositions[8].ToString()] += 1
-		}
-	}
-	return len(results)
+	return RopeBridge(input, 10)
 }
 
 func main() {
