@@ -1,7 +1,5 @@
 package models
 
-import "strings"
-
 type Stack struct {
 	title   int
 	content []string
@@ -23,16 +21,5 @@ func (stack *Stack) Pop() (string, bool) {
 		element := (stack.content)[index]       // Index into the slice and obtain the element.
 		stack.content = (stack.content)[:index] // Remove it from the stack by slicing it off.
 		return element, true
-	}
-}
-
-func (stack *Stack) Decode(input string) {
-	list := strings.Split(input, "\n")
-	for i := len(list) - 1; i >= 0; i-- {
-		if i == len(list)-1 {
-
-		} else {
-
-		}
 	}
 }

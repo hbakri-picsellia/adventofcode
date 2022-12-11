@@ -23,8 +23,7 @@ func Dive(input string, f func(string, int, *SubmarinePosition)) int {
 	position := SubmarinePosition{}
 	for _, value := range instructions {
 		instruction := strings.Split(value, " ")
-		direction := instruction[0]
-		number := utils.ParseStringToInt(instruction[1])
+		direction, number := instruction[0], utils.ParseStringToInt(instruction[1])
 		f(direction, number, &position)
 	}
 	return position.horizontal * position.depth
