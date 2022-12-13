@@ -7,10 +7,8 @@ import (
 )
 
 type Node struct {
-	position  models.Position
-	Parent    *Node
-	cost      int
-	heuristic float64
+	position models.Position
+	cost     int
 }
 
 func (node *Node) getHeight(matrix models.Matrix[rune]) int {
@@ -27,41 +25,49 @@ func getLetterHeight(char rune) int {
 	}
 }
 
-func AStar(matrix models.Matrix[rune], startNode, endNode Node) *Node {
+func HillClimbingAlgorithm(input string, start, end rune, metric func(int) bool) int {
+	matrix := models.Matrix[rune]{}
+	matrix.Decode(input, "\n", "", func(s string) rune { return []rune(s)[0] })
+	startNode := Node{position: matrix.Find(func(s rune) bool { return s == start })}
+
 	queue := models.Stack[Node]{startNode}
 	visited := map[models.Position]bool{}
 	for !queue.IsEmpty() {
 		currentNode, _ := queue.Shift()
+		if visited[currentNode.position] {
+			continue
+		}
 		visited[currentNode.position] = true
 
-		if currentNode.position.Equals(endNode.position) {
-			return &currentNode
+		if matrix[currentNode.position.I][currentNode.position.J] == end {
+			return currentNode.cost
 		}
 
-		currentHeight := currentNode.getHeight(matrix)
 		for _, direction := range [4][2]int{{0, -1}, {0, 1}, {-1, 0}, {1, 0}} {
 			neighbor := models.Position{I: currentNode.position.I + direction[0], J: currentNode.position.J + direction[1]}
-			neighborNode := Node{position: neighbor, Parent: &currentNode}
-			if matrix.Contains(neighbor) && !visited[neighborNode.position] && neighborNode.getHeight(matrix)-currentHeight <= 1 {
-				neighborNode.cost = currentNode.cost + 1
-				queue.Push(neighborNode)
+			neighborNode := Node{position: neighbor, cost: currentNode.cost + 1}
+
+			if matrix.Contains(neighbor) {
+				distance := neighborNode.getHeight(matrix) - currentNode.getHeight(matrix)
+				if metric(distance) {
+					queue.Push(neighborNode)
+				}
 			}
 		}
 	}
-	return nil
+	return -1
 }
 
 func step1(input string) int {
-	matrix := models.Matrix[rune]{}
-	matrix.Decode(input, "\n", "", func(s string) rune { return []rune(s)[0] })
-	startNode := Node{position: matrix.Find(func(s rune) bool { return s == 'S' })}
-	endNode := Node{position: matrix.Find(func(s rune) bool { return s == 'E' })}
-	result := AStar(matrix, startNode, endNode)
-	return result.cost
+	return HillClimbingAlgorithm(input, 'S', 'E', func(distance int) bool {
+		return distance <= 1
+	})
 }
 
 func step2(input string) int {
-	return 0
+	return HillClimbingAlgorithm(input, 'E', 'a', func(distance int) bool {
+		return distance >= -1
+	})
 }
 
 func main() {
@@ -70,9 +76,9 @@ func main() {
 
 	example := utils.ParseFileToString(day + "example.txt")
 	utils.AssertEqual(step1(example), 31, "example step1")
-	//utils.AssertEqual(step2(example), -1, "example step2")
+	utils.AssertEqual(step2(example), 29, "example step2")
 
 	input := utils.ParseFileToString(day + "input.txt")
-	utils.AssertEqual(step1(input), -1, "step1")
-	//utils.AssertEqual(step2(input), -1, "step2")
+	utils.AssertEqual(step1(input), 361, "step1")
+	utils.AssertEqual(step2(input), 354, "step2")
 }
