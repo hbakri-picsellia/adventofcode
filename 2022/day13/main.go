@@ -28,6 +28,4 @@ func main() {
 	//input := utils.ParseFileToString(day + "input.txt")
 	//utils.AssertEqual(step1(input), -1, "step1")
 	//utils.AssertEqual(step2(input), -1, "step2")
-
-	[]
 }
