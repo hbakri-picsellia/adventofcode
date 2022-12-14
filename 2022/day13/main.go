@@ -9,6 +9,14 @@ import (
 	"strings"
 )
 
+type Comparison string
+
+const (
+	Inferior Comparison = "Inferior"
+	Superior            = "Superior"
+	Equal               = "Equal"
+)
+
 func isInt(element any) bool {
 	return reflect.TypeOf(element).Kind() == reflect.Float64
 }
@@ -17,28 +25,40 @@ func isList(element any) bool {
 	return reflect.TypeOf(element).Kind() == reflect.Slice
 }
 
-func compare(list1 models.Stack[any], list2 models.Stack[any]) bool {
+func compare(list1 models.Stack[any], list2 models.Stack[any]) Comparison {
 	if len(list1) == 0 {
-		return true
+		return Inferior
 	}
 	if len(list2) == 0 {
-		return false
+		return Superior
 	}
+
 	if isInt(list1[0]) && isInt(list2[0]) {
-		element1, _ := list1.Pop()
-		element2, _ := list2.Pop()
-		fmt.Println(element1, element2)
+		element1, _ := list1.Shift()
+		element2, _ := list2.Shift()
 		if element1.(float64) == element2.(float64) {
 			return compare(list1, list2)
+		} else if element1.(float64) < element2.(float64) {
+			return Inferior
 		} else {
-			return element1.(float64) < element2.(float64)
+			return Superior
 		}
 	} else if isList(list1[0]) && isList(list2[0]) {
-		fmt.Println("list")
-	} else {
-		fmt.Println("default")
+		element1, _ := list1.Shift()
+		element2, _ := list2.Shift()
+		comparison := compare(element1.([]any), element2.([]any))
+		if comparison == Equal {
+			return compare(list1, list2)
+		} else {
+			return comparison
+		}
+	} else if isInt(list1[0]) && isList(list2[0]) {
+		comparison := compare([]any{list1[0]}, list2[0].([]any))
+		return compare(list1, list2)
+	} else if isList(list1[0]) && isInt(list2[0]) {
+		return compare(list1, list2)
 	}
-	return false
+	return Equal
 }
 
 func step1(input string) (result int) {
@@ -49,7 +69,7 @@ func step1(input string) (result int) {
 		_ = json.Unmarshal([]byte(parts[0]), &list1)
 		_ = json.Unmarshal([]byte(parts[1]), &list2)
 
-		if compare(list1, list2) {
+		if compare(list1, list2) == Inferior {
 			result += index + 1
 		}
 	}
@@ -65,10 +85,10 @@ func main() {
 	fmt.Println(title)
 
 	example := utils.ParseFileToString(day + "example.txt")
-	utils.AssertEqual(step1(example), -1, "example step1")
+	utils.AssertEqual(step1(example), 13, "example step1")
 	//utils.AssertEqual(step2(example), -1, "example step2")
 
-	//input := utils.ParseFileToString(day + "input.txt")
-	//utils.AssertEqual(step1(input), -1, "step1")
+	input := utils.ParseFileToString(day + "input.txt")
+	utils.AssertEqual(step1(input), -1, "step1")
 	//utils.AssertEqual(step2(input), -1, "step2")
 }
