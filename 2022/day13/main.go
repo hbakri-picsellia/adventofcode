@@ -2,12 +2,28 @@ package main
 
 import (
 	"adventofcode/models"
+	"adventofcode/operators"
 	"adventofcode/utils"
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"sort"
 	"strings"
 )
+
+type SortablePackets [][]any
+
+func (packets SortablePackets) Len() int {
+	return len(packets)
+}
+
+func (packets SortablePackets) Less(i, j int) bool {
+	return compare(packets[i], packets[j]) == Inferior
+}
+
+func (packets SortablePackets) Swap(i, j int) {
+	packets[i], packets[j] = packets[j], packets[i]
+}
 
 type Comparison string
 
@@ -36,39 +52,30 @@ func compare(list1 models.Stack[any], list2 models.Stack[any]) Comparison {
 
 	element1, _ := list1.Shift()
 	element2, _ := list2.Shift()
+	var comparison Comparison
 	if isInt(element1) && isInt(element2) {
 		if element1.(float64) == element2.(float64) {
-			return compare(list1, list2)
+			comparison = Equal
 		} else if element1.(float64) < element2.(float64) {
-			return Inferior
+			comparison = Inferior
 		} else {
-			return Superior
+			comparison = Superior
 		}
 	} else if isList(element1) && isList(element2) {
-		comparison := compare(element1.([]any), element2.([]any))
-		if comparison == Equal {
-			return compare(list1, list2)
-		} else {
-			return comparison
-		}
+		comparison = compare(element1.([]any), element2.([]any))
 	} else if isInt(element1) && isList(element2) {
-		comparison := compare([]any{element1}, element2.([]any))
-		if comparison == Equal {
-			return compare(list1, list2)
-		} else {
-			return comparison
-		}
+		comparison = compare([]any{element1}, element2.([]any))
 	} else if isList(element1) && isInt(element2) {
-		comparison := compare(element1.([]any), []any{element2})
-		if comparison == Equal {
-			return compare(list1, list2)
-		} else {
-			return comparison
-		}
+		comparison = compare(element1.([]any), []any{element2})
 	} else {
-		panic("not defined")
+		panic("not implemented")
 	}
-	return Equal
+
+	if comparison == Equal {
+		return compare(list1, list2)
+	} else {
+		return comparison
+	}
 }
 
 func step1(input string) (result int) {
@@ -86,39 +93,24 @@ func step1(input string) (result int) {
 	return result
 }
 
-func BubbleSort(packets *models.Stack[models.Stack[any]]) {
-	isDone := false
-	for !isDone {
-		isDone = true
-		var i = 0
-		for i < len(*packets)-1 {
-			if compare((*packets)[i], (*packets)[i+1]) == Superior {
-				(*packets)[i], (*packets)[i+1] = (*packets)[i+1], (*packets)[i]
-				isDone = false
-			}
-			i++
-		}
-	}
-}
-
 func step2(input string) int {
-	var packets models.Stack[models.Stack[any]]
-	packets = append(packets, []any{[]any{2.0}}, []any{[]any{6.0}})
-	var pairs models.Stack[string] = strings.Split(input, "\n\n")
-	for _, pair := range pairs {
+	var packets [][]any
+	firstPacket, secondPacket := []any{[]any{2.0}}, []any{[]any{6.0}}
+	packets = append(packets, firstPacket, secondPacket)
+	for _, pair := range strings.Split(input, "\n\n") {
 		parts := strings.Split(pair, "\n")
-		var list1, list2 models.Stack[any]
+		var list1, list2 []any
 		_ = json.Unmarshal([]byte(parts[0]), &list1)
 		_ = json.Unmarshal([]byte(parts[1]), &list2)
 
 		packets = append(packets, list1, list2)
 	}
-	BubbleSort(&packets)
-	firstPacketIndex := packets.Find(func(element models.Stack[any]) bool {
-		return len(element) == 1 && isList(element[0]) && len(element[0].([]any)) == 1 && element[0].([]any)[0] == 2.0
+	sort.Sort(SortablePackets(packets))
+	firstPacketIndex := operators.FindIndex(packets, func(element []any) bool {
+		return compare(element, firstPacket) == Equal
 	})
-	secondPacketIndex := packets.Find(func(element models.Stack[any]) bool {
-		return len(element) == 1 && isList(element[0]) && len(element[0].([]any)) == 1 && element[0].([]any)[0] == 6.0
+	secondPacketIndex := operators.FindIndex(packets, func(element []any) bool {
+		return compare(element, secondPacket) == Equal
 	})
 	return (firstPacketIndex + 1) * (secondPacketIndex + 1)
 }
