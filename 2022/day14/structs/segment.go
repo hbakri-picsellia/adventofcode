@@ -22,14 +22,14 @@ func (path *Path) GetCoveredPoints() (points []Point) {
 		if path.points[i-1].X == path.points[i].X {
 			min := int(math.Min(float64(path.points[i-1].Y), float64(path.points[i].Y)))
 			max := int(math.Max(float64(path.points[i-1].Y), float64(path.points[i].Y)))
-			for i := min; i <= max; i++ {
-				points = append(points, Point{X: path.points[i].X, Y: i})
+			for y := min; y <= max; y++ {
+				points = append(points, Point{X: path.points[i].X, Y: y})
 			}
 		} else if path.points[i-1].Y == path.points[i].Y {
 			min := int(math.Min(float64(path.points[i-1].X), float64(path.points[i].X)))
 			max := int(math.Max(float64(path.points[i-1].X), float64(path.points[i].X)))
-			for i := min; i <= max; i++ {
-				points = append(points, Point{X: i, Y: path.points[i].Y})
+			for x := min; x <= max; x++ {
+				points = append(points, Point{X: x, Y: path.points[i].Y})
 			}
 		}
 	}
