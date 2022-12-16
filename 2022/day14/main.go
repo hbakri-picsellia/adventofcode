@@ -99,7 +99,39 @@ func step1(input string) int {
 }
 
 func step2(input string) int {
-	return 0
+	var points []models.Position
+	minJ, maxI, maxJ := math.MaxInt, math.MinInt, math.MinInt
+	for _, rowPath := range strings.Split(input, "\n") {
+		path := structs.Path{}
+		path.Decode(rowPath)
+		for _, point := range path.GetCoveredPoints() {
+			points = append(points, models.Position{I: point.Y, J: point.X})
+			maxI = int(math.Max(float64(point.Y), float64(maxI)))
+			minJ = int(math.Min(float64(point.X), float64(minJ)))
+			maxJ = int(math.Max(float64(point.X), float64(maxJ)))
+		}
+	}
+	var cave models.Matrix[Material] = MakeMatrix[Material](maxI+3, maxJ+1+maxI+1)
+	for _, point := range points {
+		cave[point.I][point.J] = Rock
+	}
+	for j := 0; j < len(cave[0]); j++ {
+		cave[maxI+2][j] = Rock
+	}
+	sandSource := models.Position{I: 0, J: 500}
+
+	iteration := 0
+	for {
+		newSandPosition := RegolithReservoir(&cave, sandSource)
+		if newSandPosition == sandSource {
+			iteration++
+			break
+		}
+		cave[newSandPosition.I][newSandPosition.J] = Sand
+		iteration++
+	}
+	//drawCave(cave)
+	return iteration
 }
 
 func main() {
@@ -108,9 +140,9 @@ func main() {
 
 	example := utils.ParseFileToString(day + "example.txt")
 	utils.AssertEqual(step1(example), 24, "example step1")
-	//utils.AssertEqual(step2(example), 93, "example step2")
+	utils.AssertEqual(step2(example), 93, "example step2")
 
 	input := utils.ParseFileToString(day + "input.txt")
 	utils.AssertEqual(step1(input), 774, "step1")
-	//utils.AssertEqual(step2(input), -1, "step2")
+	utils.AssertEqual(step2(input), 22499, "step2")
 }

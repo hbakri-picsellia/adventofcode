@@ -17,3 +17,7 @@ func (position *Position) Add(other Position) Position {
 func (position *Position) Distance(other Position) float64 {
 	return math.Abs(float64(position.I-other.I)) + math.Abs(float64(position.J-other.J))
 }
+
+func (position *Position) EuclideanDistance(other Position) float64 {
+	return math.Sqrt(math.Pow(float64(position.I-other.I), 2) + math.Pow(float64(position.J-other.J), 2))
+}
