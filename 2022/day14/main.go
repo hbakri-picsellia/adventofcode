@@ -44,6 +44,28 @@ func drawCave(cave models.Matrix[Material]) {
 	}
 }
 
+func RegolithReservoir(cave *models.Matrix[Material], sandSource models.Position) models.Position {
+	n, m := (*cave).GetDimension()
+	nextMaterialIndex := operators.FindIndex(cave.GetColumn(sandSource.J)[sandSource.I:], func(material Material) bool {
+		return material != Air
+	})
+	if nextMaterialIndex < 0 {
+		return models.Position{I: -1, J: sandSource.J}
+	}
+	sandPosition := models.Position{I: nextMaterialIndex + sandSource.I - 1, J: sandSource.J}
+	if sandPosition.I+1 >= n || sandPosition.J-1 < 0 {
+		return models.Position{I: sandPosition.I + 1, J: sandPosition.J - 1}
+	} else if (*cave)[sandPosition.I+1][sandPosition.J-1] == Air {
+		return RegolithReservoir(cave, models.Position{I: sandPosition.I + 1, J: sandPosition.J - 1})
+	} else if sandPosition.J+1 >= m {
+		return models.Position{I: sandPosition.I + 1, J: sandPosition.J + 1}
+	} else if (*cave)[sandPosition.I+1][sandPosition.J+1] == Air {
+		return RegolithReservoir(cave, models.Position{I: sandPosition.I + 1, J: sandPosition.J + 1})
+	} else {
+		return sandPosition
+	}
+}
+
 func step1(input string) int {
 	var points []models.Position
 	minJ, maxI, maxJ := math.MaxInt, math.MinInt, math.MinInt
@@ -61,30 +83,18 @@ func step1(input string) int {
 	for _, point := range points {
 		cave[point.I][point.J-minJ] = Rock
 	}
-	sandSourcePosition := models.Position{I: 0, J: 500 - minJ}
+	sandSource := models.Position{I: 0, J: 500 - minJ}
+
 	iteration := 0
-	var newSandPosition models.Position
 	for {
-		newSandPosition = models.Position{I: operators.FindIndex(cave.GetColumn(sandSourcePosition.J), func(material Material) bool {
-			return material != Air
-		}) - 1, J: sandSourcePosition.J}
-		for cave[newSandPosition.I+1][newSandPosition.J-1] == Air || cave[newSandPosition.I+1][newSandPosition.J+1] == Air {
-			// TODO: this hijo de puta is going in a straight diagonal line and get out of the screen
-			if cave[newSandPosition.I+1][newSandPosition.J-1] == Air {
-				newSandPosition.I += 1
-				newSandPosition.J -= 1
-			} else if cave[newSandPosition.I+1][newSandPosition.J+1] == Air {
-				newSandPosition.I += 1
-				newSandPosition.J += 1
-			}
-		}
+		newSandPosition := RegolithReservoir(&cave, sandSource)
 		if !cave.Contains(newSandPosition) {
 			break
 		}
 		cave[newSandPosition.I][newSandPosition.J] = Sand
-		drawCave(cave)
 		iteration++
 	}
+	//drawCave(cave)
 	return iteration
 }
 
@@ -98,9 +108,9 @@ func main() {
 
 	example := utils.ParseFileToString(day + "example.txt")
 	utils.AssertEqual(step1(example), 24, "example step1")
-	//utils.AssertEqual(step2(example), -1, "example step2")
+	//utils.AssertEqual(step2(example), 93, "example step2")
 
-	//input := utils.ParseFileToString(day + "input.txt")
-	//utils.AssertEqual(step1(input), -1, "step1")
+	input := utils.ParseFileToString(day + "input.txt")
+	utils.AssertEqual(step1(input), 774, "step1")
 	//utils.AssertEqual(step2(input), -1, "step2")
 }
