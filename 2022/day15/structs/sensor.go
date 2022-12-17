@@ -19,27 +19,41 @@ func getStringBetween(s string, sep1 string, sep2 string) string {
 }
 
 func (sensor *Sensor) Decode(s string) {
-	positionJ := utils.ParseStringToInt(getStringBetween(s, "Sensor at x=", ","))
-	positionI := utils.ParseStringToInt(getStringBetween(strings.Split(s, ",")[1], "y=", ":"))
-	sensor.Position = models.Position{I: positionI, J: positionJ}
+	positionY := utils.ParseStringToInt(getStringBetween(s, "Sensor at x=", ","))
+	positionX := utils.ParseStringToInt(getStringBetween(strings.Split(s, ",")[1], "y=", ":"))
+	sensor.Position = models.Position{X: positionX, Y: positionY}
 
-	closestBeaconPositionJ := utils.ParseStringToInt(getStringBetween(strings.Split(s, ":")[1], "closest beacon is at x=", ","))
-	closestBeaconPositionI := utils.ParseStringToInt(getStringBetween(strings.Split(s, ",")[2], "y=", "\n"))
-	sensor.ClosestBeaconPosition = models.Position{I: closestBeaconPositionI, J: closestBeaconPositionJ}
+	closestBeaconPositionY := utils.ParseStringToInt(getStringBetween(strings.Split(s, ":")[1], "closest beacon is at x=", ","))
+	closestBeaconPositionX := utils.ParseStringToInt(getStringBetween(strings.Split(s, ",")[2], "y=", "\n"))
+	sensor.ClosestBeaconPosition = models.Position{X: closestBeaconPositionX, Y: closestBeaconPositionY}
 
 	sensor.DistanceWithClosestBeacon = sensor.Position.Distance(sensor.ClosestBeaconPosition)
+}
+
+func (sensor *Sensor) GetExternalBorder() (points []models.Position) {
+	borderDistance := int(sensor.DistanceWithClosestBeacon) + 1
+	var dY, X, Y int
+	for dX := 0; dX <= borderDistance; dX++ {
+		dY = borderDistance - dX
+		for _, direction := range [4][2]int{{-1, -1}, {-1, 1}, {1, -1}, {1, 1}} {
+			X = sensor.Position.X + dX*direction[0]
+			Y = sensor.Position.Y + dY*direction[1]
+			points = append(points, models.Position{X: X, Y: Y})
+		}
+	}
+	return points
 }
 
 type SensorList []Sensor
 
 func (sensorList SensorList) Decode(s string) ([]Sensor, int, int) {
-	minJ, maxJ := math.MaxInt, math.MinInt
+	minY, maxY := math.MaxInt, math.MinInt
 	return operators.Map(strings.Split(s, "\n"), func(sensorInput string) (sensor Sensor) {
 		sensor.Decode(sensorInput)
-		minJ = int(math.Min(float64(sensor.Position.J)-sensor.DistanceWithClosestBeacon, float64(minJ)))
-		maxJ = int(math.Max(float64(sensor.Position.J)+sensor.DistanceWithClosestBeacon, float64(maxJ)))
-		minJ = int(math.Min(float64(sensor.ClosestBeaconPosition.J)-sensor.DistanceWithClosestBeacon, float64(minJ)))
-		maxJ = int(math.Max(float64(sensor.ClosestBeaconPosition.J)+sensor.DistanceWithClosestBeacon, float64(maxJ)))
+		minY = int(math.Min(float64(sensor.Position.Y)-sensor.DistanceWithClosestBeacon, float64(minY)))
+		maxY = int(math.Max(float64(sensor.Position.Y)+sensor.DistanceWithClosestBeacon, float64(maxY)))
+		minY = int(math.Min(float64(sensor.ClosestBeaconPosition.Y), float64(minY)))
+		maxY = int(math.Max(float64(sensor.ClosestBeaconPosition.Y), float64(maxY)))
 		return sensor
-	}), minJ, maxJ
+	}), minY, maxY
 }

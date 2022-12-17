@@ -3,21 +3,21 @@ package models
 import "math"
 
 type Position struct {
-	I, J int
+	X, Y int
 }
 
 func (position *Position) Equals(other Position) bool {
-	return position.I == other.I && position.J == other.J
+	return position.X == other.X && position.Y == other.Y
 }
 
 func (position *Position) Add(other Position) Position {
-	return Position{I: position.I + other.I, J: position.J + other.J}
+	return Position{X: position.X + other.X, Y: position.Y + other.Y}
 }
 
 func (position *Position) Distance(other Position) float64 {
-	return math.Abs(float64(position.I-other.I)) + math.Abs(float64(position.J-other.J))
+	return math.Abs(float64(position.X-other.X)) + math.Abs(float64(position.Y-other.Y))
 }
 
 func (position *Position) EuclideanDistance(other Position) float64 {
-	return math.Sqrt(math.Pow(float64(position.I-other.I), 2) + math.Pow(float64(position.J-other.J), 2))
+	return math.Sqrt(math.Pow(float64(position.X-other.X), 2) + math.Pow(float64(position.Y-other.Y), 2))
 }

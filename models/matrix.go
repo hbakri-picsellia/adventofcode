@@ -33,16 +33,16 @@ func (matrix *Matrix[T]) Find(f func(T) bool) Position {
 	for i := range *matrix {
 		for j := range (*matrix)[i] {
 			if f((*matrix)[i][j]) {
-				return Position{I: i, J: j}
+				return Position{X: i, Y: j}
 			}
 		}
 	}
-	return Position{I: -1, J: -1}
+	return Position{X: -1, Y: -1}
 }
 
 func (matrix *Matrix[T]) Contains(position Position) bool {
 	n, m := matrix.GetDimension()
-	return position.I >= 0 && position.I < n && position.J >= 0 && position.J < m
+	return position.X >= 0 && position.X < n && position.Y >= 0 && position.Y < m
 }
 
 func (matrix *Matrix[T]) GetNeighbors(position Position) (neighbors []Position) {

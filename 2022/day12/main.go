@@ -12,7 +12,7 @@ type Node struct {
 }
 
 func (node *Node) getHeight(matrix models.Matrix[rune]) int {
-	return getLetterHeight(matrix[node.position.I][node.position.J])
+	return getLetterHeight(matrix[node.position.X][node.position.Y])
 }
 
 func getLetterHeight(char rune) int {
@@ -39,12 +39,12 @@ func HillClimbingAlgorithm(input string, start, end rune, metric func(int) bool)
 		}
 		visited[currentNode.position] = true
 
-		if matrix[currentNode.position.I][currentNode.position.J] == end {
+		if matrix[currentNode.position.X][currentNode.position.Y] == end {
 			return currentNode.cost
 		}
 
 		for _, direction := range [4][2]int{{0, -1}, {0, 1}, {-1, 0}, {1, 0}} {
-			neighbor := models.Position{I: currentNode.position.I + direction[0], J: currentNode.position.J + direction[1]}
+			neighbor := models.Position{X: currentNode.position.X + direction[0], Y: currentNode.position.Y + direction[1]}
 			neighborNode := Node{position: neighbor, cost: currentNode.cost + 1}
 
 			if matrix.Contains(neighbor) {

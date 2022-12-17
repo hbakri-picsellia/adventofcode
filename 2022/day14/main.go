@@ -46,21 +46,21 @@ func drawCave(cave models.Matrix[Material]) {
 
 func RegolithReservoir(cave *models.Matrix[Material], sandSource models.Position) models.Position {
 	n, m := (*cave).GetDimension()
-	nextMaterialIndex := operators.FindIndex(cave.GetColumn(sandSource.J)[sandSource.I:], func(material Material) bool {
+	nextMaterialIndex := operators.FindIndex(cave.GetColumn(sandSource.Y)[sandSource.X:], func(material Material) bool {
 		return material != Air
 	})
 	if nextMaterialIndex < 0 {
-		return models.Position{I: -1, J: sandSource.J}
+		return models.Position{X: -1, Y: sandSource.Y}
 	}
-	sandPosition := models.Position{I: nextMaterialIndex + sandSource.I - 1, J: sandSource.J}
-	if sandPosition.I+1 >= n || sandPosition.J-1 < 0 {
-		return models.Position{I: sandPosition.I + 1, J: sandPosition.J - 1}
-	} else if (*cave)[sandPosition.I+1][sandPosition.J-1] == Air {
-		return RegolithReservoir(cave, models.Position{I: sandPosition.I + 1, J: sandPosition.J - 1})
-	} else if sandPosition.J+1 >= m {
-		return models.Position{I: sandPosition.I + 1, J: sandPosition.J + 1}
-	} else if (*cave)[sandPosition.I+1][sandPosition.J+1] == Air {
-		return RegolithReservoir(cave, models.Position{I: sandPosition.I + 1, J: sandPosition.J + 1})
+	sandPosition := models.Position{X: nextMaterialIndex + sandSource.X - 1, Y: sandSource.Y}
+	if sandPosition.X+1 >= n || sandPosition.Y-1 < 0 {
+		return models.Position{X: sandPosition.X + 1, Y: sandPosition.Y - 1}
+	} else if (*cave)[sandPosition.X+1][sandPosition.Y-1] == Air {
+		return RegolithReservoir(cave, models.Position{X: sandPosition.X + 1, Y: sandPosition.Y - 1})
+	} else if sandPosition.Y+1 >= m {
+		return models.Position{X: sandPosition.X + 1, Y: sandPosition.Y + 1}
+	} else if (*cave)[sandPosition.X+1][sandPosition.Y+1] == Air {
+		return RegolithReservoir(cave, models.Position{X: sandPosition.X + 1, Y: sandPosition.Y + 1})
 	} else {
 		return sandPosition
 	}
@@ -73,7 +73,7 @@ func step1(input string) int {
 		path := structs.Path{}
 		path.Decode(rowPath)
 		for _, point := range path.GetCoveredPoints() {
-			points = append(points, models.Position{I: point.Y, J: point.X})
+			points = append(points, models.Position{X: point.Y, Y: point.X})
 			maxI = int(math.Max(float64(point.Y), float64(maxI)))
 			minJ = int(math.Min(float64(point.X), float64(minJ)))
 			maxJ = int(math.Max(float64(point.X), float64(maxJ)))
@@ -81,9 +81,9 @@ func step1(input string) int {
 	}
 	var cave models.Matrix[Material] = MakeMatrix[Material](maxI+1, maxJ+1-minJ)
 	for _, point := range points {
-		cave[point.I][point.J-minJ] = Rock
+		cave[point.X][point.Y-minJ] = Rock
 	}
-	sandSource := models.Position{I: 0, J: 500 - minJ}
+	sandSource := models.Position{X: 0, Y: 500 - minJ}
 
 	iteration := 0
 	for {
@@ -91,7 +91,7 @@ func step1(input string) int {
 		if !cave.Contains(newSandPosition) {
 			break
 		}
-		cave[newSandPosition.I][newSandPosition.J] = Sand
+		cave[newSandPosition.X][newSandPosition.Y] = Sand
 		iteration++
 	}
 	//drawCave(cave)
@@ -105,7 +105,7 @@ func step2(input string) int {
 		path := structs.Path{}
 		path.Decode(rowPath)
 		for _, point := range path.GetCoveredPoints() {
-			points = append(points, models.Position{I: point.Y, J: point.X})
+			points = append(points, models.Position{X: point.Y, Y: point.X})
 			maxI = int(math.Max(float64(point.Y), float64(maxI)))
 			minJ = int(math.Min(float64(point.X), float64(minJ)))
 			maxJ = int(math.Max(float64(point.X), float64(maxJ)))
@@ -113,12 +113,12 @@ func step2(input string) int {
 	}
 	var cave models.Matrix[Material] = MakeMatrix[Material](maxI+3, maxJ+1+maxI+1)
 	for _, point := range points {
-		cave[point.I][point.J] = Rock
+		cave[point.X][point.Y] = Rock
 	}
 	for j := 0; j < len(cave[0]); j++ {
 		cave[maxI+2][j] = Rock
 	}
-	sandSource := models.Position{I: 0, J: 500}
+	sandSource := models.Position{X: 0, Y: 500}
 
 	iteration := 0
 	for {
@@ -127,7 +127,7 @@ func step2(input string) int {
 			iteration++
 			break
 		}
-		cave[newSandPosition.I][newSandPosition.J] = Sand
+		cave[newSandPosition.X][newSandPosition.Y] = Sand
 		iteration++
 	}
 	//drawCave(cave)
