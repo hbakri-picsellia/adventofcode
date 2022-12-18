@@ -1,6 +1,7 @@
 package main
 
 import (
+	"adventofcode/operators"
 	. "adventofcode/structs"
 	"adventofcode/utils"
 	"fmt"
@@ -20,48 +21,32 @@ func FloydWarshall(adjacencyMatrix Matrix[float64]) (W Matrix[float64]) {
 	return W
 }
 
-//def dp(i: str, t: int, remaining: frozenset):
-//	ans = 0
-//	for j in remaining:
-//		if (next_t := t - dist[i][j] - 1) >= 0:
-//			ans = max(ans, valves[j] * next_t + dp(j, next_t, remaining - {j}))
-//	return ans
+func ProboscideaVolcanium(valves Valves, distance Matrix[float64], currentValve Valve, minutes int, candidatesName map[string]bool) (result int) {
+	i := valves.FindIndex(func(v Valve) bool { return v.Name == currentValve.Name })
+	for candidateName := range candidatesName {
+		j := valves.FindIndex(func(v Valve) bool { return v.Name == candidateName })
+		cost := minutes - int(distance[i][j]) - 1
+		if cost >= 0 {
+			delete(candidatesName, candidateName)
+			result = int(math.Max(float64(result), float64(valves.List[j].FlowRate*cost+ProboscideaVolcanium(valves, distance, valves.List[j], cost, candidatesName))))
+		}
+	}
+	return result
+}
 
-func step1(input string) (pressure int) {
+func step1(input string) int {
 	valves := MakeValves(input)
 	adjacencyMatrix := valves.GetAdjacencyMatrix()
 	distance := FloydWarshall(adjacencyMatrix)
 
-	currentValveIndex := 0
-	minutes := 0
-	for minutes < 30 {
-
-		// looking for the best choice
-		bestChoice := math.Inf(-1)
-		var bestChoiceIndex int
-		for index := range valves.List {
-			if !valves.List[index].Open {
-				choice := (float64(minutes) - distance[currentValveIndex][index]) * float64(valves.List[index].FlowRate)
-				if choice > bestChoice {
-					bestChoice = choice
-					bestChoiceIndex = index
-				}
-			}
-		}
-
-		// go to the best choice
-		for i := 0; i < int(distance[currentValveIndex][bestChoiceIndex])-1; i++ {
-			minutes++
-			pressure += valves.GetPressure()
-		}
-		minutes++
-		valves.List[bestChoiceIndex].Open = true
-		fmt.Println(valves.List[currentValveIndex].Name, valves.List[bestChoiceIndex].Name)
-
-		// select the best choice as the current
-		currentValveIndex = bestChoiceIndex
+	candidatesMap := make(map[string]bool)
+	candidatesName := operators.Map(valves.Filter(func(valve Valve) bool {
+		return valve.FlowRate > 0
+	}), func(valve Valve) string { return valve.Name })
+	for _, value := range candidatesName {
+		candidatesMap[value] = true
 	}
-	return pressure
+	return ProboscideaVolcanium(valves, distance, valves.List[0], 30, candidatesMap)
 }
 
 func step2(input string) int {

@@ -1,5 +1,7 @@
 package structs
 
+import "adventofcode/operators"
+
 type List[T any] []T
 
 func (list *List[T]) IsEmpty() bool {
@@ -53,15 +55,20 @@ func (list *List[T]) FindIndex(f func(T) bool) int {
 	return -1
 }
 
-//func (list *List[T]) Remove(value T) {
-//	index := list.Find(func(v T) bool { return v == value })
-//	list.RemoveIndex(index)
-//}
-
 func (list *List[T]) ForEach(f func(T)) {
 	for index := range *list {
 		f((*list)[index])
 	}
+}
+
+func (list *List[T]) Filter(f func(T) bool) []T {
+	return operators.Reduce(*list, func(acc []T, current T) []T {
+		if f(current) {
+			return append(acc, current)
+		} else {
+			return acc
+		}
+	}, []T{})
 }
 
 type ListComparable[T comparable] struct {
@@ -75,4 +82,9 @@ func (list *ListComparable[T]) Contains(element T) bool {
 		}
 	}
 	return false
+}
+
+func (list *ListComparable[T]) Remove(value T) {
+	index := list.FindIndex(func(v T) bool { return v == value })
+	list.RemoveIndex(index)
 }
