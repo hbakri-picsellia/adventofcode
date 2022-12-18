@@ -45,3 +45,7 @@ func Remove[T any](s []T, index int) []T {
 	ret = append(ret, s[:index]...)
 	return append(ret, s[index+1:]...)
 }
+
+func GetStringBetween(s string, sep1 string, sep2 string) string {
+	return strings.TrimSpace(strings.SplitN(strings.SplitAfterN(s, sep1, 2)[1], sep2, 2)[0])
+}

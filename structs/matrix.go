@@ -1,11 +1,25 @@
-package models
+package structs
 
 import (
 	"adventofcode/operators"
+	"fmt"
 	"strings"
 )
 
 type Matrix[T any] [][]T
+
+func MakeMatrix[T any](n, m int, defaultValue T) Matrix[T] {
+	matrix := make([][]T, n)
+	rows := make([]T, n*m)
+	for i := 0; i < len(rows); i++ {
+		rows[i] = defaultValue
+	}
+	for i, startRow := 0, 0; i < n; i, startRow = i+1, startRow+m {
+		endRow := startRow + m
+		matrix[i] = rows[startRow:endRow:endRow]
+	}
+	return matrix
+}
 
 func (matrix *Matrix[T]) Decode(input string, rowSeparator string, columnSeparator string, f func(string) T) {
 	*matrix = operators.Map(strings.Split(input, rowSeparator), func(rowInput string) []T {
@@ -54,6 +68,15 @@ func (matrix *Matrix[T]) GetNeighbors(position Position) (neighbors []Position) 
 		}
 	}
 	return neighbors
+}
+
+func (matrix *Matrix[T]) Display() {
+	for _, row := range *matrix {
+		for _, element := range row {
+			fmt.Print(element)
+		}
+		fmt.Println()
+	}
 }
 
 func Map[T, U any](matrix Matrix[T], f func(T) U) Matrix[U] {

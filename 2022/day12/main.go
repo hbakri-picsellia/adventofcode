@@ -1,17 +1,17 @@
 package main
 
 import (
-	"adventofcode/models"
+	"adventofcode/structs"
 	"adventofcode/utils"
 	"fmt"
 )
 
 type Node struct {
-	position models.Position
+	position structs.Position
 	cost     int
 }
 
-func (node *Node) getHeight(matrix models.Matrix[rune]) int {
+func (node *Node) getHeight(matrix structs.Matrix[rune]) int {
 	return getLetterHeight(matrix[node.position.X][node.position.Y])
 }
 
@@ -26,12 +26,12 @@ func getLetterHeight(char rune) int {
 }
 
 func HillClimbingAlgorithm(input string, start, end rune, metric func(int) bool) int {
-	matrix := models.Matrix[rune]{}
+	matrix := structs.Matrix[rune]{}
 	matrix.Decode(input, "\n", "", func(s string) rune { return []rune(s)[0] })
 	startNode := Node{position: matrix.Find(func(s rune) bool { return s == start })}
 
-	queue := models.Stack[Node]{startNode}
-	visited := map[models.Position]bool{}
+	queue := structs.List[Node]{startNode}
+	visited := map[structs.Position]bool{}
 	for !queue.IsEmpty() {
 		currentNode, _ := queue.Shift()
 		if visited[currentNode.position] {
@@ -44,7 +44,7 @@ func HillClimbingAlgorithm(input string, start, end rune, metric func(int) bool)
 		}
 
 		for _, direction := range [4][2]int{{0, -1}, {0, 1}, {-1, 0}, {1, 0}} {
-			neighbor := models.Position{X: currentNode.position.X + direction[0], Y: currentNode.position.Y + direction[1]}
+			neighbor := structs.Position{X: currentNode.position.X + direction[0], Y: currentNode.position.Y + direction[1]}
 			neighborNode := Node{position: neighbor, cost: currentNode.cost + 1}
 
 			if matrix.Contains(neighbor) {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"adventofcode/models"
 	"adventofcode/operators"
+	"adventofcode/structs"
 	"adventofcode/utils"
 	"fmt"
 	"sort"
@@ -16,18 +16,18 @@ func reverse[T any](s []T) []T {
 	return result
 }
 
-func getEdges(matrix models.Matrix, i, j int) [][]int {
+func getEdges(matrix structs.Matrix, i, j int) [][]int {
 	return [][]int{reverse(matrix.GetRow(i)[:j]), matrix.GetRow(i)[j+1:],
 		reverse(matrix.GetColumn(j)[:i]), matrix.GetColumn(j)[i+1:]}
 }
 
-func isLowPoint(matrix models.Matrix, i, j int) bool {
+func isLowPoint(matrix structs.Matrix, i, j int) bool {
 	return operators.All(getEdges(matrix, i, j), func(edge []int) bool {
 		return len(edge) == 0 || edge[0] > matrix[i][j]
 	})
 }
 
-func recursiveBasinSearch(matrix *models.Matrix, i, j int) (value int) {
+func recursiveBasinSearch(matrix *structs.Matrix, i, j int) (value int) {
 	n, m := matrix.GetDimension()
 	if i < 0 || i >= n || j < 0 || j >= m {
 		return 0
@@ -45,7 +45,7 @@ func recursiveBasinSearch(matrix *models.Matrix, i, j int) (value int) {
 }
 
 func step1(input string) (value int) {
-	matrix := models.Matrix{}
+	matrix := structs.Matrix{}
 	matrix.Decode(input, "\n", "")
 	for i, row := range matrix {
 		for j := range row {
@@ -58,7 +58,7 @@ func step1(input string) (value int) {
 }
 
 func step2(input string) (value int) {
-	matrix := models.Matrix{}
+	matrix := structs.Matrix{}
 	matrix.Decode(input, "\n", "")
 	results := make([]int, 0)
 	for i, row := range matrix {

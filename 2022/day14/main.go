@@ -2,8 +2,8 @@ package main
 
 import (
 	"adventofcode/2022/day14/structs"
-	"adventofcode/models"
 	"adventofcode/operators"
+	. "adventofcode/structs"
 	"adventofcode/utils"
 	"fmt"
 	"math"
@@ -18,17 +18,7 @@ const (
 	Sand          = 2
 )
 
-func MakeMatrix[T any](n, m int) [][]T {
-	matrix := make([][]T, n)
-	rows := make([]T, n*m)
-	for i, startRow := 0, 0; i < n; i, startRow = i+1, startRow+m {
-		endRow := startRow + m
-		matrix[i] = rows[startRow:endRow:endRow]
-	}
-	return matrix
-}
-
-func drawCave(cave models.Matrix[Material]) {
+func drawCave(cave Matrix[Material]) {
 	for _, row := range cave {
 		for _, rowValue := range row {
 			switch rowValue {
@@ -44,46 +34,46 @@ func drawCave(cave models.Matrix[Material]) {
 	}
 }
 
-func RegolithReservoir(cave *models.Matrix[Material], sandSource models.Position) models.Position {
+func RegolithReservoir(cave *Matrix[Material], sandSource Position) Position {
 	n, m := (*cave).GetDimension()
 	nextMaterialIndex := operators.FindIndex(cave.GetColumn(sandSource.Y)[sandSource.X:], func(material Material) bool {
 		return material != Air
 	})
 	if nextMaterialIndex < 0 {
-		return models.Position{X: -1, Y: sandSource.Y}
+		return Position{X: -1, Y: sandSource.Y}
 	}
-	sandPosition := models.Position{X: nextMaterialIndex + sandSource.X - 1, Y: sandSource.Y}
+	sandPosition := Position{X: nextMaterialIndex + sandSource.X - 1, Y: sandSource.Y}
 	if sandPosition.X+1 >= n || sandPosition.Y-1 < 0 {
-		return models.Position{X: sandPosition.X + 1, Y: sandPosition.Y - 1}
+		return Position{X: sandPosition.X + 1, Y: sandPosition.Y - 1}
 	} else if (*cave)[sandPosition.X+1][sandPosition.Y-1] == Air {
-		return RegolithReservoir(cave, models.Position{X: sandPosition.X + 1, Y: sandPosition.Y - 1})
+		return RegolithReservoir(cave, Position{X: sandPosition.X + 1, Y: sandPosition.Y - 1})
 	} else if sandPosition.Y+1 >= m {
-		return models.Position{X: sandPosition.X + 1, Y: sandPosition.Y + 1}
+		return Position{X: sandPosition.X + 1, Y: sandPosition.Y + 1}
 	} else if (*cave)[sandPosition.X+1][sandPosition.Y+1] == Air {
-		return RegolithReservoir(cave, models.Position{X: sandPosition.X + 1, Y: sandPosition.Y + 1})
+		return RegolithReservoir(cave, Position{X: sandPosition.X + 1, Y: sandPosition.Y + 1})
 	} else {
 		return sandPosition
 	}
 }
 
 func step1(input string) int {
-	var points []models.Position
+	var points []Position
 	minJ, maxI, maxJ := math.MaxInt, math.MinInt, math.MinInt
 	for _, rowPath := range strings.Split(input, "\n") {
 		path := structs.Path{}
 		path.Decode(rowPath)
 		for _, point := range path.GetCoveredPoints() {
-			points = append(points, models.Position{X: point.Y, Y: point.X})
+			points = append(points, Position{X: point.Y, Y: point.X})
 			maxI = int(math.Max(float64(point.Y), float64(maxI)))
 			minJ = int(math.Min(float64(point.X), float64(minJ)))
 			maxJ = int(math.Max(float64(point.X), float64(maxJ)))
 		}
 	}
-	var cave models.Matrix[Material] = MakeMatrix[Material](maxI+1, maxJ+1-minJ)
+	var cave Matrix[Material] = MakeMatrix[Material](maxI+1, maxJ+1-minJ)
 	for _, point := range points {
 		cave[point.X][point.Y-minJ] = Rock
 	}
-	sandSource := models.Position{X: 0, Y: 500 - minJ}
+	sandSource := Position{X: 0, Y: 500 - minJ}
 
 	iteration := 0
 	for {
@@ -99,26 +89,26 @@ func step1(input string) int {
 }
 
 func step2(input string) int {
-	var points []models.Position
+	var points []Position
 	minJ, maxI, maxJ := math.MaxInt, math.MinInt, math.MinInt
 	for _, rowPath := range strings.Split(input, "\n") {
 		path := structs.Path{}
 		path.Decode(rowPath)
 		for _, point := range path.GetCoveredPoints() {
-			points = append(points, models.Position{X: point.Y, Y: point.X})
+			points = append(points, Position{X: point.Y, Y: point.X})
 			maxI = int(math.Max(float64(point.Y), float64(maxI)))
 			minJ = int(math.Min(float64(point.X), float64(minJ)))
 			maxJ = int(math.Max(float64(point.X), float64(maxJ)))
 		}
 	}
-	var cave models.Matrix[Material] = MakeMatrix[Material](maxI+3, maxJ+1+maxI+1)
+	var cave Matrix[Material] = MakeMatrix[Material](maxI+3, maxJ+1+maxI+1)
 	for _, point := range points {
 		cave[point.X][point.Y] = Rock
 	}
 	for j := 0; j < len(cave[0]); j++ {
 		cave[maxI+2][j] = Rock
 	}
-	sandSource := models.Position{X: 0, Y: 500}
+	sandSource := Position{X: 0, Y: 500}
 
 	iteration := 0
 	for {

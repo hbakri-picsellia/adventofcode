@@ -1,8 +1,8 @@
 package main
 
 import (
-	"adventofcode/models"
 	"adventofcode/operators"
+	"adventofcode/structs"
 	"adventofcode/utils"
 	"fmt"
 	"math"
@@ -16,12 +16,12 @@ func reverse[T any](s []T) []T {
 	return result
 }
 
-func getEdges(matrix models.Matrix, i int, j int) [][]int {
+func getEdges(matrix structs.Matrix, i int, j int) [][]int {
 	return [][]int{reverse(matrix.GetRow(i)[:j]), matrix.GetRow(i)[j+1:],
 		reverse(matrix.GetColumn(j)[:i]), matrix.GetColumn(j)[i+1:]}
 }
 
-func IsTreeVisible(matrix models.Matrix, i int, j int) bool {
+func IsTreeVisible(matrix structs.Matrix, i int, j int) bool {
 	return operators.All(getEdges(matrix, i, j), func(edge []int) bool {
 		return len(edge) > 0 && operators.Any(edge, func(point int) bool {
 			return point >= matrix[i][j]
@@ -29,7 +29,7 @@ func IsTreeVisible(matrix models.Matrix, i int, j int) bool {
 	})
 }
 
-func ScenicScore(matrix models.Matrix, i int, j int) int {
+func ScenicScore(matrix structs.Matrix, i int, j int) int {
 	return operators.Multiply(operators.Map(getEdges(matrix, i, j), func(edge []int) int {
 		index := operators.FindIndex(edge, func(point int) bool {
 			return point >= matrix[i][j]
@@ -43,7 +43,7 @@ func ScenicScore(matrix models.Matrix, i int, j int) int {
 }
 
 func step1(input string) (value int) {
-	matrix := models.Matrix{}
+	matrix := structs.Matrix{}
 	matrix.Decode(input, "\n", "")
 	for i, row := range matrix {
 		for j := range row {
@@ -56,7 +56,7 @@ func step1(input string) (value int) {
 }
 
 func step2(input string) (value int) {
-	matrix := models.Matrix{}
+	matrix := structs.Matrix{}
 	matrix.Decode(input, "\n", "")
 	for i, row := range matrix {
 		for j := range row {

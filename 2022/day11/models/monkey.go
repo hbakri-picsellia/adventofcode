@@ -1,14 +1,14 @@
 package models
 
 import (
-	"adventofcode/models"
 	"adventofcode/operators"
+	"adventofcode/structs"
 	"adventofcode/utils"
 	"strings"
 )
 
 type Monkey struct {
-	Items              models.Stack[int]
+	Items              structs.List[int]
 	NbItemsInspected   int
 	rawOperation       []string
 	TestDivider        int

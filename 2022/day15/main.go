@@ -2,16 +2,16 @@ package main
 
 import (
 	"adventofcode/2022/day15/structs"
-	"adventofcode/models"
+	structs2 "adventofcode/structs"
 	"adventofcode/utils"
 	"fmt"
 )
 
 func step1(input string, X int) int {
 	sensors, minY, maxY := structs.SensorList{}.Decode(input)
-	mapped := map[models.Position]bool{}
+	mapped := map[structs2.Position]bool{}
 	for y := minY; y <= maxY; y++ {
-		candidate := models.Position{X: X, Y: y}
+		candidate := structs2.Position{X: X, Y: y}
 		for _, sensor := range sensors {
 			if sensor.Position.Distance(candidate) <= sensor.DistanceWithClosestBeacon {
 				mapped[candidate] = true
@@ -24,7 +24,7 @@ func step1(input string, X int) int {
 	return len(mapped)
 }
 
-func isValid(point models.Position, sensors []structs.Sensor) bool {
+func isValid(point structs2.Position, sensors []structs.Sensor) bool {
 	for _, sensor := range sensors {
 		if point.Distance(sensor.Position) <= sensor.DistanceWithClosestBeacon {
 			return false

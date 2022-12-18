@@ -1,8 +1,8 @@
 package main
 
 import (
-	"adventofcode/models"
 	"adventofcode/operators"
+	"adventofcode/structs"
 	"adventofcode/utils"
 	"encoding/json"
 	"fmt"
@@ -41,7 +41,7 @@ func isList(element any) bool {
 	return reflect.TypeOf(element).Kind() == reflect.Slice
 }
 
-func compare(list1 models.Stack[any], list2 models.Stack[any]) Comparison {
+func compare(list1 structs.List[any], list2 structs.List[any]) Comparison {
 	if len(list1) == 0 && len(list2) == 0 {
 		return Equal
 	} else if len(list1) == 0 {
@@ -79,10 +79,10 @@ func compare(list1 models.Stack[any], list2 models.Stack[any]) Comparison {
 }
 
 func step1(input string) (result int) {
-	var pairs models.Stack[string] = strings.Split(input, "\n\n")
+	var pairs structs.List[string] = strings.Split(input, "\n\n")
 	for index, pair := range pairs {
 		parts := strings.Split(pair, "\n")
-		var list1, list2 models.Stack[any]
+		var list1, list2 structs.List[any]
 		_ = json.Unmarshal([]byte(parts[0]), &list1)
 		_ = json.Unmarshal([]byte(parts[1]), &list2)
 
