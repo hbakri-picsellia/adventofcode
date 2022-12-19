@@ -6,22 +6,16 @@ import (
 
 type List[T any] []T
 
+func (list *List[T]) Len() int {
+	return len(*list)
+}
+
 func (list *List[T]) IsEmpty() bool {
 	return len(*list) == 0
 }
 
-func (list *List[T]) Push(newElement T) {
-	*list = append(*list, newElement)
-}
-
-func (list *List[T]) Shift() (result T, exists bool) {
-	if list.IsEmpty() {
-		return result, false
-	} else {
-		element := (*list)[0]
-		*list = (*list)[1:]
-		return element, true
-	}
+func (list *List[T]) Push(newElements ...T) {
+	*list = append(*list, newElements...)
 }
 
 func (list *List[T]) Pop() (result T, exists bool) {
@@ -31,6 +25,16 @@ func (list *List[T]) Pop() (result T, exists bool) {
 		index := len(*list) - 1
 		element := (*list)[index]
 		*list = (*list)[:index]
+		return element, true
+	}
+}
+
+func (list *List[T]) Shift() (result T, exists bool) {
+	if list.IsEmpty() {
+		return result, false
+	} else {
+		element := (*list)[0]
+		*list = (*list)[1:]
 		return element, true
 	}
 }
@@ -73,6 +77,10 @@ func (list *List[T]) Filter(f func(T) bool) []T {
 	}, []T{})
 }
 
+func (list *List[T]) All(f func(T) bool) bool {
+	return len(list.Filter(f)) == len(*list)
+}
+
 func (list *List[T]) Clone() List[T] {
 	clone := make([]T, len(*list))
 	copy(clone, *list)
@@ -85,6 +93,14 @@ func (list *List[T]) Reduce(f func(T, T) T, initValue T) T {
 		reduced = f(reduced, value)
 	}
 	return reduced
+}
+
+func (list *List[T]) Map(f func(T) T) []T {
+	result := make([]T, len(*list))
+	for index, value := range *list {
+		result[index] = f(value)
+	}
+	return result
 }
 
 type ListComparable[T comparable] struct {
@@ -115,4 +131,30 @@ func (list *ListComparable[T]) Contains(element T) bool {
 func (list *ListComparable[T]) Remove(value T) {
 	index := list.FindIndex(func(v T) bool { return v == value })
 	list.RemoveIndex(index)
+}
+
+func (list *ListComparable[T]) Intersection(list2 ListComparable[T]) (sharedElements []T) {
+	m := make(map[T]bool)
+	list.ForEach(func(value T) {
+		m[value] = true
+	})
+	list2.ForEach(func(value T) {
+		if m[value] {
+			sharedElements = append(sharedElements, value)
+		}
+	})
+	return sharedElements
+}
+
+func (list *ListComparable[T]) Intersects(list2 ListComparable[T]) bool {
+	m := make(map[T]bool)
+	list.ForEach(func(value T) {
+		m[value] = true
+	})
+	for _, value := range list2.List {
+		if m[value] {
+			return true
+		}
+	}
+	return false
 }

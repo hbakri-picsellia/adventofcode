@@ -21,3 +21,7 @@ func (position *Position) Distance(other Position) float64 {
 func (position *Position) EuclideanDistance(other Position) float64 {
 	return math.Sqrt(math.Pow(float64(position.X-other.X), 2) + math.Pow(float64(position.Y-other.Y), 2))
 }
+
+type PositionList struct {
+	List[Position]
+}
