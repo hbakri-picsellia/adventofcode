@@ -10,14 +10,14 @@ import (
 
 type Valve struct {
 	Name     string
-	FlowRate int
+	FlowRate float64
 	Valves   []*Valve
 	Open     bool
 }
 
 func MakeValve(s string) (valve Valve) {
 	valve.Name = utils.GetStringBetween(s, "Valve", "has")
-	valve.FlowRate = utils.ParseStringToInt(utils.GetStringBetween(s, "flow rate=", ";"))
+	valve.FlowRate = float64(utils.ParseStringToInt(utils.GetStringBetween(s, "flow rate=", ";")))
 	return
 }
 
@@ -53,13 +53,4 @@ func (valves *Valves) GetAdjacencyMatrix() Matrix[float64] {
 		}
 	}
 	return adjacencyMatrix
-}
-
-func (valves *Valves) GetPressure() (pressure int) {
-	for _, valve := range valves.List {
-		if valve.Open {
-			pressure += valve.FlowRate
-		}
-	}
-	return pressure
 }

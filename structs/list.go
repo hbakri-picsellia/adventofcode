@@ -73,6 +73,12 @@ func (list *List[T]) Filter(f func(T) bool) []T {
 	}, []T{})
 }
 
+func (list *List[T]) Clone() List[T] {
+	clone := make([]T, len(*list))
+	copy(clone, *list)
+	return clone
+}
+
 type ListComparable[T comparable] struct {
 	List[T]
 }
