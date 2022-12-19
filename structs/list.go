@@ -79,6 +79,14 @@ func (list *List[T]) Clone() List[T] {
 	return clone
 }
 
+func (list *List[T]) Reduce(f func(T, T) T, initValue T) T {
+	reduced := initValue
+	for _, value := range *list {
+		reduced = f(reduced, value)
+	}
+	return reduced
+}
+
 type ListComparable[T comparable] struct {
 	List[T]
 }
