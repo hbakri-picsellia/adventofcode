@@ -1,6 +1,8 @@
 package structs
 
-import "adventofcode/operators"
+import (
+	"adventofcode/operators"
+)
 
 type List[T any] []T
 
@@ -73,6 +75,18 @@ func (list *List[T]) Filter(f func(T) bool) []T {
 
 type ListComparable[T comparable] struct {
 	List[T]
+}
+
+func (list *ListComparable[T]) Equals(list2 ListComparable[T]) bool {
+	if len((*list).List) != len(list2.List) {
+		return false
+	}
+	for index := range (*list).List {
+		if (*list).List[index] != list2.List[index] {
+			return false
+		}
+	}
+	return true
 }
 
 func (list *ListComparable[T]) Contains(element T) bool {
