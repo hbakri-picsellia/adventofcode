@@ -25,6 +25,10 @@ func ParseStringToIntList(text string, separator string) []int {
 	return operators.Map(strings.Split(text, separator), ParseStringToInt)
 }
 
+func ParseIntToString(i int) string {
+	return strconv.FormatInt(int64(i), 10)
+}
+
 func AssertEqual[T comparable](input1 T, input2 T, message string) {
 	if input1 == input2 {
 		fmt.Println(message, "succeeded !")

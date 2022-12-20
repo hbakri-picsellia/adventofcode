@@ -6,34 +6,45 @@ import (
 	"adventofcode/utils"
 	"fmt"
 	"math"
+	"strings"
 )
 
-//type Params struct {
-//	rockIndex int
-//	windIndex int
-//	XList     string
-//}
-//
-//type Func func(valves Valves, distance Matrix[float64], minutes float64, current Valve, candidates List[Valve], isElephant bool) float64
-//
-//var cache = make(map[Params]float64)
-//
-//func memorized(fn Func) Func {
-//	return func(valves Valves, distance Matrix[float64], minutes float64, current Valve, candidates List[Valve], isElephant bool) float64 {
-//		names := operators.Map(candidates, func(valve Valve) string {
-//			return valve.Name
-//		})
-//		sort.Strings(names)
-//		input := Params{minutes: minutes, currentName: current.Name, candidatesName: strings.Join(names, ","), isElephant: isElephant}
-//		if val, found := cache[input]; found {
-//			return val
-//		}
-//
-//		result := fn(valves, distance, minutes, current, candidates, isElephant)
-//		cache[input] = result
-//		return result
-//	}
-//}
+type Input struct {
+	rockIndex int
+	windIndex int
+	restXList string
+}
+
+type Output struct {
+	rockIndex int
+	windIndex int
+	restMaxX  int
+}
+
+type Func func(rest *ListComparable[Position], wind *[]int, rockIndex, windIndex, total int) (int, int)
+
+func memorized(fn Func) Func {
+	var cache = make(map[Input]Output)
+
+	return func(rest *ListComparable[Position], wind *[]int, rockIndex, windIndex, total int) (int, int) {
+		newRockIndex, newWindIndex := fn(rest, wind, rockIndex, windIndex, total)
+
+		maxX := getMaxX(rest.List)
+		restXList := strings.Join(operators.Map(getXList(rest.List, maxX), utils.ParseIntToString), ",")
+		input := Input{rockIndex: rockIndex % len(ROCKS), windIndex: windIndex % len(*wind), restXList: restXList}
+		if output, found := cache[input]; found {
+			rep := total - newRockIndex
+			rem := rep / (newRockIndex - output.rockIndex)
+			rest.List = rest.Map(func(position Position) Position {
+				return position.Add(Position{X: rem * (maxX - output.restMaxX)})
+			})
+			return newRockIndex + rem*(newRockIndex-output.rockIndex), output.windIndex
+		}
+
+		cache[input] = Output{rockIndex: newRockIndex, windIndex: newWindIndex, restMaxX: maxX}
+		return newRockIndex, newWindIndex
+	}
+}
 
 var ROCKS = [][]Position{
 	{{X: 0, Y: 0}, {X: 0, Y: 1}, {X: 0, Y: 2}, {X: 0, Y: 3}},
@@ -47,59 +58,80 @@ var DIRECTIONS = map[rune]int{
 	'<': -1,
 }
 
-func getMaxX(positions ListComparable[Position]) int {
-	return positions.Reduce(func(previousValue, currentValue Position) Position {
-		return Position{X: int(math.Max(float64(previousValue.X), float64(currentValue.X)))}
-	}, positions.List[0]).X
+func display(rest ListComparable[Position]) {
+	matrix := MakeMatrix[string](getMaxX(rest.List)+2, 7, ".")
+	for _, position := range rest.List {
+		matrix[getMaxX(rest.List)-position.X][position.Y] = "#"
+	}
+	matrix.Display()
 }
 
-func PyroclasticFlow() {
+func getMaxX(positions List[Position]) int {
+	return positions.Reduce(func(previousValue, currentValue Position) Position {
+		return Position{X: int(math.Max(float64(previousValue.X), float64(currentValue.X)))}
+	}, positions[0]).X
+}
 
+func getXList(positions List[Position], maxX int) (result []int) {
+	for y := 0; y < 7; y++ {
+		result = append(result, maxX-getMaxX(positions.Filter(func(position Position) bool { return position.Y == y })))
+	}
+	return result
+}
+
+func PyroclasticFlow(rest *ListComparable[Position], wind *[]int, rockIndex, windIndex, total int) (int, int) {
+	var rock, newRock ListComparable[Position]
+	start := Position{X: 4 + getMaxX(rest.List), Y: 2}
+	rock.List = ROCKS[rockIndex%len(ROCKS)]
+	rock.List = rock.Map(func(position Position) Position { return position.Add(start) })
+	for {
+		newRock.List = rock.Map(func(position Position) Position { return position.Add(Position{Y: (*wind)[windIndex%len(*wind)]}) })
+		windIndex++
+		if !newRock.Intersects(*rest) && newRock.All(func(position Position) bool { return 0 <= position.Y && position.Y < 7 }) {
+			rock = newRock
+		}
+
+		newRock.List = rock.Map(func(position Position) Position { return position.Add(Position{X: -1}) })
+		if newRock.Intersects(*rest) {
+			rest.Push(rock.List...)
+			break
+		}
+		rock = newRock
+	}
+	rockIndex++
+	return rockIndex, windIndex
 }
 
 func step1(input string) int {
-	wind := operators.Map([]rune(input), func(char rune) int { return DIRECTIONS[char] })
-	w := 0
-
+	windIndex, wind := 0, operators.Map([]rune(input), func(char rune) int { return DIRECTIONS[char] })
 	var rest ListComparable[Position]
 	for y := 0; y < 7; y++ {
 		rest.Push(Position{X: -1, Y: y})
 	}
 
-	var rock, newRock ListComparable[Position]
-
-	for i := 0; i < 2022; i++ {
-		start := Position{X: 4 + getMaxX(rest), Y: 2}
-		rock.List = ROCKS[i%len(ROCKS)]
-		rock.List = rock.Map(func(position Position) Position { return position.Add(start) })
-		for {
-			newRock.List = rock.Map(func(position Position) Position { return position.Add(Position{Y: wind[w%len(wind)]}) })
-			w++
-			if !newRock.Intersects(rest) && newRock.All(func(position Position) bool { return 0 <= position.Y && position.Y < 7 }) {
-				rock = newRock
-			}
-
-			newRock.List = rock.Map(func(position Position) Position { return position.Add(Position{X: -1}) })
-			if newRock.Intersects(rest) {
-				rest.Push(rock.List...)
-				break
-			}
-			rock = newRock
-		}
-
-		//fmt.Println()
-		//fmt.Println("round", i)
-		//matrix := MakeMatrix[string](getMaxX(rest)+2, 7, ".")
-		//for _, position := range rest.List {
-		//	matrix[getMaxX(rest)-position.X][position.Y] = "#"
-		//}
-		//matrix.Display()
+	rockIndex := 0
+	MemoPyroclasticFlow := memorized(PyroclasticFlow)
+	total := 2022
+	for rockIndex < total {
+		rockIndex, windIndex = MemoPyroclasticFlow(&rest, &wind, rockIndex, windIndex, total)
 	}
-	return getMaxX(rest) + 1
+	return getMaxX(rest.List) + 1
 }
 
 func step2(input string) int {
-	return 0
+	windIndex, wind := 0, operators.Map([]rune(input), func(char rune) int { return DIRECTIONS[char] })
+	var rest ListComparable[Position]
+	for y := 0; y < 7; y++ {
+		rest.Push(Position{X: -1, Y: y})
+	}
+
+	rockIndex := 0
+	MemoPyroclasticFlow := memorized(PyroclasticFlow)
+	total := 1000000000000
+	for rockIndex < total {
+		rockIndex, windIndex = MemoPyroclasticFlow(&rest, &wind, rockIndex, windIndex, total)
+	}
+	return getMaxX(rest.List) + 1
 }
 
 func main() {
@@ -108,9 +140,9 @@ func main() {
 
 	example := utils.ParseFileToString(day + "example.txt")
 	utils.AssertEqual(step1(example), 3068, "example step1")
-	//utils.AssertEqual(step2(example), -1, "example step2")
+	utils.AssertEqual(step2(example), 1514285714288, "example step2")
 
 	input := utils.ParseFileToString(day + "input.txt")
-	utils.AssertEqual(step1(input), -1, "step1")
-	//utils.AssertEqual(step2(input), -1, "step2")
+	utils.AssertEqual(step1(input), 3159, "step1")
+	utils.AssertEqual(step2(input), 1566272189352, "step2")
 }
