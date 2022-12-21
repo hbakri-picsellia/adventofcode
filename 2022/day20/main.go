@@ -1,62 +1,36 @@
 package main
 
 import (
-	"adventofcode/operators"
 	"adventofcode/utils"
 	"fmt"
-	"strings"
 )
 
-func step1(input string) (result int) {
-	numbers := operators.Map(strings.Split(input, "\n"), utils.ParseStringToInt)
-	nodes := Nodes{List: operators.Map(numbers, func(number int) Node {
-		return Node{number: number}
-	})}
-	for index := range nodes.List {
-		nodes.List[index].left = &nodes.List[(nodes.Len()+index-1)%nodes.Len()]
-		nodes.List[index].right = &nodes.List[(index+1)%nodes.Len()]
-	}
-
-	fmt.Println(nodes)
-	for _, node := range nodes.List {
+func GrovePositioningSystem(nodes *Nodes) {
+	for index, node := range nodes.List {
 		if node.number == 0 {
 			continue
-		}
-		currentNode := node
-
-		if node.number > 0 {
-			nodes.MoveRight()
+		} else if node.number > 0 {
+			nbMoves := nodes.List[index].number % (nodes.Len() - 1)
+			nodes.MoveRight(index, nbMoves)
 		} else {
-			//for i := 0; i > -nodes[index].number%(len(nodes)-1); i-- {
-			//	currentNode = currentNode.left
-			//}
-			//if currentNode == nodes[index] {
-			//	continue
-			//}
-			//nodes[index].left.right = nodes[index].right
-			//nodes[index].right.left = nodes[index].left
-			//currentNode.left.right = nodes[index]
-			//nodes[index].left = currentNode.left
-			//currentNode.left = nodes[index]
-			//nodes[index].right = currentNode
+			nbMoves := -nodes.List[index].number % (nodes.Len() - 1)
+			nodes.MoveLeft(index, nbMoves)
 		}
 	}
-	fmt.Println(nodes)
+}
 
-	zero := *nodes.Find(func(node *Node) bool {
-		return node.number == 0
-	})
-	for i := 0; i < 3; i++ {
-		for j := 0; j < 1000; j++ {
-			zero = zero.right
-		}
-		result += zero.number
-	}
-	return result
+func step1(input string) int {
+	nodes := MakeNodes(input, 1)
+	GrovePositioningSystem(&nodes)
+	return nodes.GetGroveCoordinates()
 }
 
 func step2(input string) int {
-	return 0
+	nodes := MakeNodes(input, 811589153)
+	for i := 0; i < 10; i++ {
+		GrovePositioningSystem(&nodes)
+	}
+	return nodes.GetGroveCoordinates()
 }
 
 func main() {
@@ -65,9 +39,9 @@ func main() {
 
 	example := utils.ParseFileToString(day + "example.txt")
 	utils.AssertEqual(step1(example), 3, "example step1")
-	//utils.AssertEqual(step2(example), -1, "example step2")
+	utils.AssertEqual(step2(example), 1623178306, "example step2")
 
-	//input := utils.ParseFileToString(day + "input.txt")
-	//utils.AssertEqual(step1(input), -1, "step1")
-	//utils.AssertEqual(step2(input), -1, "step2")
+	input := utils.ParseFileToString(day + "input.txt")
+	utils.AssertEqual(step1(input), 872, "step1")
+	utils.AssertEqual(step2(input), 5382459262696, "step2")
 }

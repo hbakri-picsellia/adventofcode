@@ -103,6 +103,14 @@ func (list *List[T]) Map(f func(T) T) []T {
 	return result
 }
 
+func (list *List[T]) Reverse() []T {
+	result := make([]T, len(*list))
+	for index := range result {
+		result[index] = (*list)[len(*list)-index-1]
+	}
+	return result
+}
+
 type ListComparable[T comparable] struct {
 	List[T]
 }
