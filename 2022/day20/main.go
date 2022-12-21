@@ -7,22 +7,52 @@ import (
 	"strings"
 )
 
-type Node struct {
-	number int
-	left   *Node
-	right  *Node
-}
-
-func step1(input string) int {
+func step1(input string) (result int) {
 	numbers := operators.Map(strings.Split(input, "\n"), utils.ParseStringToInt)
-	nodes := operators.Map(numbers, func(number int) Node {
+	nodes := Nodes{List: operators.Map(numbers, func(number int) Node {
 		return Node{number: number}
-	})
-	for index := range nodes {
-		nodes[index].left = &nodes[(len(nodes)+index-1)%len(nodes)]
-		nodes[index].right = &nodes[(index+1)%len(nodes)]
+	})}
+	for index := range nodes.List {
+		nodes.List[index].left = &nodes.List[(nodes.Len()+index-1)%nodes.Len()]
+		nodes.List[index].right = &nodes.List[(index+1)%nodes.Len()]
 	}
-	return 0
+
+	fmt.Println(nodes)
+	for _, node := range nodes.List {
+		if node.number == 0 {
+			continue
+		}
+		currentNode := node
+
+		if node.number > 0 {
+			nodes.MoveRight()
+		} else {
+			//for i := 0; i > -nodes[index].number%(len(nodes)-1); i-- {
+			//	currentNode = currentNode.left
+			//}
+			//if currentNode == nodes[index] {
+			//	continue
+			//}
+			//nodes[index].left.right = nodes[index].right
+			//nodes[index].right.left = nodes[index].left
+			//currentNode.left.right = nodes[index]
+			//nodes[index].left = currentNode.left
+			//currentNode.left = nodes[index]
+			//nodes[index].right = currentNode
+		}
+	}
+	fmt.Println(nodes)
+
+	zero := *nodes.Find(func(node *Node) bool {
+		return node.number == 0
+	})
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 1000; j++ {
+			zero = zero.right
+		}
+		result += zero.number
+	}
+	return result
 }
 
 func step2(input string) int {
@@ -34,10 +64,10 @@ func main() {
 	fmt.Println(title)
 
 	example := utils.ParseFileToString(day + "example.txt")
-	utils.AssertEqual(step1(example), -1, "example step1")
-	utils.AssertEqual(step2(example), -1, "example step2")
+	utils.AssertEqual(step1(example), 3, "example step1")
+	//utils.AssertEqual(step2(example), -1, "example step2")
 
-	input := utils.ParseFileToString(day + "input.txt")
-	utils.AssertEqual(step1(input), -1, "step1")
-	utils.AssertEqual(step2(input), -1, "step2")
+	//input := utils.ParseFileToString(day + "input.txt")
+	//utils.AssertEqual(step1(input), -1, "step1")
+	//utils.AssertEqual(step2(input), -1, "step2")
 }
