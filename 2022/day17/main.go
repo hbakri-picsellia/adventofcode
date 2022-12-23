@@ -23,7 +23,7 @@ type Output struct {
 
 type Func func(rest *ListComparable[Position], wind *[]int, rockIndex, windIndex, total int) (int, int)
 
-func memorized(fn Func) Func {
+func cached(fn Func) Func {
 	var cache = make(map[Input]Output)
 
 	return func(rest *ListComparable[Position], wind *[]int, rockIndex, windIndex, total int) (int, int) {
@@ -110,7 +110,7 @@ func step1(input string) int {
 	}
 
 	rockIndex := 0
-	MemoPyroclasticFlow := memorized(PyroclasticFlow)
+	MemoPyroclasticFlow := cached(PyroclasticFlow)
 	total := 2022
 	for rockIndex < total {
 		rockIndex, windIndex = MemoPyroclasticFlow(&rest, &wind, rockIndex, windIndex, total)
@@ -126,7 +126,7 @@ func step2(input string) int {
 	}
 
 	rockIndex := 0
-	MemoPyroclasticFlow := memorized(PyroclasticFlow)
+	MemoPyroclasticFlow := cached(PyroclasticFlow)
 	total := 1000000000000
 	for rockIndex < total {
 		rockIndex, windIndex = MemoPyroclasticFlow(&rest, &wind, rockIndex, windIndex, total)
