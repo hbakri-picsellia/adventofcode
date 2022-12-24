@@ -18,7 +18,7 @@ func parseProcedures(input string) []models.Procedure {
 func parseTitleStacks(input string) []int {
 	return operators.Map(operators.Filter(strings.Split(input, " "),
 		func(str string) bool { return len(str) > 0 },
-	), utils.ParseStringToInt)
+	), utils.ParseInt)
 }
 
 func parseStacks(input string) (stacks []models.Stack) {

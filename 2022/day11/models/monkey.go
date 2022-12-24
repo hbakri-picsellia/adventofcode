@@ -22,11 +22,11 @@ func getStringBetween(s string, sep1 string, sep2 string) string {
 
 func (monkey *Monkey) Decode(input string) {
 	rawItems := getStringBetween(input, "Starting items:", "\n")
-	monkey.Items = operators.Map(strings.Split(rawItems, ", "), utils.ParseStringToInt)
+	monkey.Items = operators.Map(strings.Split(rawItems, ", "), utils.ParseInt)
 	monkey.rawOperation = strings.Split(getStringBetween(input, "Operation: new =", "\n"), " ")
-	monkey.TestDivider = utils.ParseStringToInt(getStringBetween(input, "Test: divisible by", "\n"))
-	monkey.SuccessDestination = utils.ParseStringToInt(getStringBetween(input, "If true: throw to monkey", "\n"))
-	monkey.FailureDestination = utils.ParseStringToInt(getStringBetween(input, "If false: throw to monkey", "\n"))
+	monkey.TestDivider = utils.ParseInt(getStringBetween(input, "Test: divisible by", "\n"))
+	monkey.SuccessDestination = utils.ParseInt(getStringBetween(input, "If true: throw to monkey", "\n"))
+	monkey.FailureDestination = utils.ParseInt(getStringBetween(input, "If false: throw to monkey", "\n"))
 }
 
 func (monkey *Monkey) Operation(value int) (result int) {
@@ -34,7 +34,7 @@ func (monkey *Monkey) Operation(value int) (result int) {
 		if s == "old" {
 			return value
 		} else {
-			return utils.ParseStringToInt(s)
+			return utils.ParseInt(s)
 		}
 	}
 	switch monkey.rawOperation[1] {

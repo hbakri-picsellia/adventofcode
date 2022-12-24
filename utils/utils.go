@@ -16,13 +16,13 @@ func ParseFileToString(filename string) string {
 	return strings.Trim(string(fileContent), "\n")
 }
 
-func ParseStringToInt(s string) int {
+func ParseInt(s string) int {
 	num, _ := strconv.ParseInt(s, 10, 0)
 	return int(num)
 }
 
 func ParseStringToIntList(text string, separator string) []int {
-	return operators.Map(strings.Split(text, separator), ParseStringToInt)
+	return operators.Map(strings.Split(text, separator), ParseInt)
 }
 
 func ParseIntToString(i int) string {

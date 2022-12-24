@@ -19,7 +19,7 @@ type Nodes struct {
 }
 
 func MakeNodes(s string, decryptionKey int) (nodes Nodes) {
-	numbers := operators.Map(strings.Split(s, "\n"), utils.ParseStringToInt)
+	numbers := operators.Map(strings.Split(s, "\n"), utils.ParseInt)
 	for index, number := range numbers {
 		nodes.Push(Node{id: index, number: decryptionKey * number})
 	}

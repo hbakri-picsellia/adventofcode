@@ -13,7 +13,7 @@ type Point struct {
 }
 
 func (point *Point) Decode(pointInput string) {
-	coordinates := operators.Map(strings.Split(pointInput, ","), utils.ParseStringToInt)
+	coordinates := operators.Map(strings.Split(pointInput, ","), utils.ParseInt)
 	point.X = coordinates[0]
 	point.Y = coordinates[1]
 }

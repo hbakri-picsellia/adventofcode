@@ -27,7 +27,7 @@ func step1(input string) int {
 func step2(input string) int {
 	positions := ListComparable[Position3D]{List: operators.Map(strings.Split(input, "\n"), MakePosition3D)}
 
-	maxPosition := operators.Reduce(positions.List, func(acc, value Position3D) Position3D {
+	maxPosition := positions.Reduce(func(acc, value Position3D) Position3D {
 		return Position3D{
 			X: int(math.Max(float64(acc.X), float64(value.X))),
 			Y: int(math.Max(float64(acc.Y), float64(value.Y))),
@@ -35,7 +35,7 @@ func step2(input string) int {
 		}
 	}, Position3D{X: math.MinInt, Y: math.MinInt, Z: math.MinInt})
 	maxPosition = maxPosition.Add([3]int{1, 1, 1})
-	minPosition := operators.Reduce(positions.List, func(acc, value Position3D) Position3D {
+	minPosition := positions.Reduce(func(acc, value Position3D) Position3D {
 		return Position3D{
 			X: int(math.Min(float64(acc.X), float64(value.X))),
 			Y: int(math.Min(float64(acc.Y), float64(value.Y))),

@@ -17,7 +17,7 @@ type Valve struct {
 
 func MakeValve(s string) (valve Valve) {
 	valve.Name = utils.GetStringBetween(s, "Valve", "has")
-	valve.FlowRate = float64(utils.ParseStringToInt(utils.GetStringBetween(s, "flow rate=", ";")))
+	valve.FlowRate = float64(utils.ParseInt(utils.GetStringBetween(s, "flow rate=", ";")))
 	return
 }
 

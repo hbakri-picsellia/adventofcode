@@ -56,7 +56,7 @@ func step1(input string) (value int) {
 }
 
 func step2(input string) (value int) {
-	matrix := structs.Matrix{}
+	matrix := Matrix[int]{}
 	matrix.Decode(input, "\n", "")
 	for i, row := range matrix {
 		for j := range row {

@@ -19,12 +19,12 @@ func getStringBetween(s string, sep1 string, sep2 string) string {
 }
 
 func (sensor *Sensor) Decode(s string) {
-	positionY := utils.ParseStringToInt(getStringBetween(s, "Sensor at x=", ","))
-	positionX := utils.ParseStringToInt(getStringBetween(strings.Split(s, ",")[1], "y=", ":"))
+	positionY := utils.ParseInt(getStringBetween(s, "Sensor at x=", ","))
+	positionX := utils.ParseInt(getStringBetween(strings.Split(s, ",")[1], "y=", ":"))
 	sensor.Position = structs.Position{X: positionX, Y: positionY}
 
-	closestBeaconPositionY := utils.ParseStringToInt(getStringBetween(strings.Split(s, ":")[1], "closest beacon is at x=", ","))
-	closestBeaconPositionX := utils.ParseStringToInt(getStringBetween(strings.Split(s, ",")[2], "y=", "\n"))
+	closestBeaconPositionY := utils.ParseInt(getStringBetween(strings.Split(s, ":")[1], "closest beacon is at x=", ","))
+	closestBeaconPositionX := utils.ParseInt(getStringBetween(strings.Split(s, ",")[2], "y=", "\n"))
 	sensor.ClosestBeaconPosition = structs.Position{X: closestBeaconPositionX, Y: closestBeaconPositionY}
 
 	sensor.DistanceWithClosestBeacon = sensor.Position.Distance(sensor.ClosestBeaconPosition)

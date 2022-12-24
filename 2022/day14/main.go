@@ -69,7 +69,7 @@ func step1(input string) int {
 			maxJ = int(math.Max(float64(point.X), float64(maxJ)))
 		}
 	}
-	var cave Matrix[Material] = MakeMatrix[Material](maxI+1, maxJ+1-minJ)
+	var cave = MakeMatrix[Material](maxI+1, maxJ+1-minJ, Air)
 	for _, point := range points {
 		cave[point.X][point.Y-minJ] = Rock
 	}
@@ -101,7 +101,7 @@ func step2(input string) int {
 			maxJ = int(math.Max(float64(point.X), float64(maxJ)))
 		}
 	}
-	var cave Matrix[Material] = MakeMatrix[Material](maxI+3, maxJ+1+maxI+1)
+	var cave = MakeMatrix[Material](maxI+3, maxJ+1+maxI+1, Air)
 	for _, point := range points {
 		cave[point.X][point.Y] = Rock
 	}

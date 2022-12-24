@@ -28,7 +28,7 @@ func step1(input string) (score int) {
 			score += signalStrength(cycle, X)
 			cycle += 1
 			score += signalStrength(cycle, X)
-			X += utils.ParseStringToInt(parts[1])
+			X += utils.ParseInt(parts[1])
 		}
 	}
 	return score
@@ -61,7 +61,7 @@ func step2(input string) (text string) {
 			cycle += 1
 			text += draw(cycle, X)
 			cycle += 1
-			X += utils.ParseStringToInt(parts[1])
+			X += utils.ParseInt(parts[1])
 		}
 	}
 	return text

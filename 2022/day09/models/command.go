@@ -22,5 +22,5 @@ type Command struct {
 func (command *Command) Decode(input string) {
 	parts := strings.SplitN(input, " ", 2)
 	command.Type = CommandType(parts[0])
-	command.Number = utils.ParseStringToInt(parts[1])
+	command.Number = utils.ParseInt(parts[1])
 }

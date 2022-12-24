@@ -10,7 +10,7 @@ import (
 
 func getNumbersAndBoards(input string) ([]int, []models.Board) {
 	inputs := strings.Split(input, "\n\n")
-	numbers := operators.Map(strings.Split(inputs[0], ","), utils.ParseStringToInt)
+	numbers := operators.Map(strings.Split(inputs[0], ","), utils.ParseInt)
 	boards := make([]models.Board, len(inputs)-1)
 	for index, boardInput := range inputs[1:] {
 		boards[index].Init(boardInput)

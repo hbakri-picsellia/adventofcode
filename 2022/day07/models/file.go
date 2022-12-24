@@ -12,6 +12,6 @@ type File struct {
 
 func (file *File) Decode(input string) {
 	parts := strings.SplitN(input, " ", 2)
-	file.Size = utils.ParseStringToInt(parts[0])
+	file.Size = utils.ParseInt(parts[0])
 	file.Name = parts[1]
 }

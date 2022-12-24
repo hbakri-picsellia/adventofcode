@@ -11,7 +11,7 @@ type Position3D struct {
 }
 
 func MakePosition3D(s string) Position3D {
-	coordinates := operators.Map(strings.Split(s, ","), utils.ParseStringToInt)
+	coordinates := operators.Map(strings.Split(s, ","), utils.ParseInt)
 	return Position3D{X: coordinates[0], Y: coordinates[1], Z: coordinates[2]}
 }
 

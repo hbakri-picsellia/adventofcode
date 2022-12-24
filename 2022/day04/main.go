@@ -8,7 +8,7 @@ import (
 )
 
 func getSections(assignment string) []int {
-	return operators.Map(strings.Split(assignment, "-"), utils.ParseStringToInt)
+	return operators.Map(strings.Split(assignment, "-"), utils.ParseInt)
 }
 
 func fullyContains(sections1 []int, sections2 []int) bool {

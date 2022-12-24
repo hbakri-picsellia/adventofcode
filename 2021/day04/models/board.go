@@ -17,7 +17,7 @@ func (board *Board) Init(input string) {
 	board.content = operators.Map(strings.Split(input, "\n"), func(rowInput string) []int {
 		return operators.Map(operators.Filter(strings.Split(rowInput, " "),
 			func(str string) bool { return len(str) > 0 },
-		), utils.ParseStringToInt,
+		), utils.ParseInt,
 		)
 	})
 	board.IsFinished = false

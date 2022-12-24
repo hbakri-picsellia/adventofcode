@@ -26,7 +26,7 @@ func FuelCalculation(list []int, position int, metric func(int) int) (fuel int) 
 }
 
 func step1(input string) int {
-	list := operators.Map(strings.Split(input, ","), utils.ParseStringToInt)
+	list := operators.Map(strings.Split(input, ","), utils.ParseInt)
 	median := getMedian(list)
 	candidates := []int{median - 1, median, median + 1}
 	return operators.Min(operators.Map(candidates, func(candidate int) int {
@@ -37,7 +37,7 @@ func step1(input string) int {
 }
 
 func step2(input string) int {
-	list := operators.Map(strings.Split(input, ","), utils.ParseStringToInt)
+	list := operators.Map(strings.Split(input, ","), utils.ParseInt)
 	mean := getMean(list)
 	candidates := []int{mean - 1, mean, mean + 1}
 	return operators.Min(operators.Map(candidates, func(candidate int) int {

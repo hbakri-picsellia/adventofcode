@@ -12,7 +12,7 @@ type Procedure struct {
 }
 
 func (procedure *Procedure) Decode(input string) {
-	procedure.Number = utils.ParseStringToInt(strings.Split(strings.SplitAfter(input, "move ")[1], " ")[0])
-	procedure.Source = utils.ParseStringToInt(strings.Split(strings.SplitAfter(input, "from ")[1], " ")[0])
-	procedure.Destination = utils.ParseStringToInt(strings.Split(strings.SplitAfter(input, "to ")[1], " ")[0])
+	procedure.Number = utils.ParseInt(strings.Split(strings.SplitAfter(input, "move ")[1], " ")[0])
+	procedure.Source = utils.ParseInt(strings.Split(strings.SplitAfter(input, "from ")[1], " ")[0])
+	procedure.Destination = utils.ParseInt(strings.Split(strings.SplitAfter(input, "to ")[1], " ")[0])
 }

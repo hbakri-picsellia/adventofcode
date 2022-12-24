@@ -48,12 +48,12 @@ func IterativeLanternfish(arr []int, nbDays int) (sum int) {
 }
 
 func step1(input string) int {
-	initialState := operators.Map(strings.Split(input, ","), utils.ParseStringToInt)
+	initialState := operators.Map(strings.Split(input, ","), utils.ParseInt)
 	return RecursiveLanternfish(initialState, 80)
 }
 
 func step2(input string) int {
-	initialState := operators.Map(strings.Split(input, ","), utils.ParseStringToInt)
+	initialState := operators.Map(strings.Split(input, ","), utils.ParseInt)
 	return IterativeLanternfish(initialState, 256)
 }
 

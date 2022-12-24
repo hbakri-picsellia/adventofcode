@@ -54,7 +54,7 @@ func memorized(fn Func) Func {
 func ProboscideaVolcanium(valves Valves, distance Matrix[float64], minutes float64, current Valve, candidates List[Valve], isElephant bool) (result float64) {
 	if isElephant {
 		initialValve := *valves.Find(func(v Valve) bool { return v.Name == "AA" })
-		result = ProboscideaVolcanium(valves, distance, 26, initialValve, candidates, false)
+		result = memorized(ProboscideaVolcanium)(valves, distance, 26, initialValve, candidates, false)
 	}
 	i := valves.FindIndex(func(v Valve) bool { return v.Name == current.Name })
 	for index, candidate := range candidates {
