@@ -1,5 +1,7 @@
 package main
 
+import "adventofcode/mathInt"
+
 type Inventory struct {
 	Ore      int
 	Clay     int
@@ -39,4 +41,12 @@ func (inventory Inventory) LessThan(inventory2 Inventory) bool {
 		inventory.Clay <= inventory2.Clay &&
 		inventory.Obsidian <= inventory2.Obsidian &&
 		inventory.Geode <= inventory2.Geode
+}
+
+func (inventory Inventory) Max(inventory2 Inventory) (inventory3 Inventory) {
+	inventory3.Ore = mathInt.Max(inventory.Ore, inventory2.Ore)
+	inventory3.Clay = mathInt.Max(inventory.Clay, inventory2.Clay)
+	inventory3.Obsidian = mathInt.Max(inventory.Obsidian, inventory2.Obsidian)
+	inventory3.Geode = mathInt.Max(inventory.Geode, inventory2.Geode)
+	return inventory3
 }

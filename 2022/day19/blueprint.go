@@ -2,7 +2,9 @@ package main
 
 import (
 	"adventofcode/utils"
+	"reflect"
 	"regexp"
+	"strings"
 )
 
 type Blueprint struct {
@@ -22,4 +24,16 @@ func MakeBlueprint(rawBlueprint string) (blueprint Blueprint) {
 	blueprint.ObsidianRobotCost = Inventory{Ore: utils.ParseInt(submatches[3]), Clay: utils.ParseInt(submatches[4])}
 	blueprint.GeodeRobotCost = Inventory{Ore: utils.ParseInt(submatches[5]), Obsidian: utils.ParseInt(submatches[6])}
 	return blueprint
+}
+
+func (blueprint Blueprint) MaxRobotCosts() (result Inventory) {
+	values := reflect.ValueOf(blueprint)
+	typesOf := values.Type()
+	for i := 0; i < values.NumField(); i++ {
+		if inventory, ok := values.Field(i).Interface().(Inventory); ok &&
+			strings.HasSuffix(typesOf.Field(i).Name, "RobotCost") {
+			result = result.Max(inventory)
+		}
+	}
+	return result
 }

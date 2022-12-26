@@ -10,45 +10,18 @@ import (
 	"strings"
 )
 
-type Input struct {
-	blueprint Blueprint
-	minutes   int
-	robots    Inventory
-	inventory Inventory
-}
-
-type Output struct {
-	result int
-}
-
-type Func func(blueprint Blueprint, minutes int, robots Inventory, inventory Inventory) int
-
-var cache = make(map[Input]Output)
-
-func cached(fn Func) Func {
-	return func(blueprint Blueprint, minutes int, robots Inventory, inventory Inventory) int {
-		input := Input{blueprint: blueprint, minutes: minutes, robots: robots, inventory: inventory}
-		if output, found := cache[input]; found {
-			return output.result
-		}
-
-		result := fn(blueprint, minutes, robots, inventory)
-		cache[input] = Output{result: result}
-		return result
-	}
-}
-
 func NotEnoughMinerals(blueprint Blueprint, minutes int, robots Inventory, inventory Inventory) (result int) {
 	if minutes == 0 {
 		return inventory.Geode
 	}
 	waitMinutes := 0
+	maxNeededRobots := blueprint.MaxRobotCosts()
 
 	// if we create no more robot
 	result = inventory.Geode + robots.Geode*minutes
 
 	// if we create an ore robot
-	if robots.Ore > 0 {
+	if robots.Ore > 0 && robots.Ore < maxNeededRobots.Ore {
 		waitMinutes = int(math.Max(math.Ceil(float64(blueprint.OreRobotCost.Ore-inventory.Ore)/float64(robots.Ore)), 0))
 		if minutes-(waitMinutes+1) >= 0 {
 			result = mathInt.Max(result, cached(NotEnoughMinerals)(
@@ -61,7 +34,7 @@ func NotEnoughMinerals(blueprint Blueprint, minutes int, robots Inventory, inven
 	}
 
 	// if we create a clay robot
-	if robots.Ore > 0 {
+	if robots.Ore > 0 && robots.Clay < maxNeededRobots.Clay {
 		waitMinutes = int(math.Max(math.Ceil(float64(blueprint.ClayRobotCost.Ore-inventory.Ore)/float64(robots.Ore)), 0))
 		if minutes-(waitMinutes+1) >= 0 {
 			result = mathInt.Max(result, cached(NotEnoughMinerals)(
@@ -74,7 +47,7 @@ func NotEnoughMinerals(blueprint Blueprint, minutes int, robots Inventory, inven
 	}
 
 	// if we create an obsidian robot
-	if robots.Ore > 0 && robots.Clay > 0 {
+	if robots.Ore > 0 && robots.Clay > 0 && robots.Obsidian < maxNeededRobots.Obsidian {
 		waitMinutesOre := int(math.Max(math.Ceil(float64(blueprint.ObsidianRobotCost.Ore-inventory.Ore)/float64(robots.Ore)), 0))
 		waitMinutesClay := int(math.Max(math.Ceil(float64(blueprint.ObsidianRobotCost.Clay-inventory.Clay)/float64(robots.Clay)), 0))
 		waitMinutes = mathInt.Max(waitMinutesOre, waitMinutesClay)
@@ -107,16 +80,8 @@ func NotEnoughMinerals(blueprint Blueprint, minutes int, robots Inventory, inven
 
 func step1(input string) int {
 	blueprints := List[Blueprint](operators.Map(strings.Split(input, "\n"), MakeBlueprint))
-	//blueprint := blueprints[0].ClayRobotCost
-	//values := reflect.ValueOf(blueprint)
-	//typesOf := values.Type()
-	//for i := 0; i < values.NumField(); i++ {
-	//	fmt.Printf("Field: %s\tValue: %v\n", typesOf.Field(i).Name, values.Field(i).Interface())
-	//}
 	return operators.Sum(operators.Map(blueprints, func(blueprint Blueprint) int {
-		result := cached(NotEnoughMinerals)(blueprint, 24, Inventory{Ore: 1}, Inventory{})
-		fmt.Println(blueprint.Id, result)
-		return blueprint.Id * result
+		return blueprint.Id * cached(NotEnoughMinerals)(blueprint, 24, Inventory{Ore: 1}, Inventory{})
 	}))
 }
 
@@ -140,5 +105,5 @@ func main() {
 
 	input := utils.ParseFileToString(day + "input.txt")
 	utils.AssertEqual(step1(input), 1466, "step1")
-	utils.AssertEqual(step2(input), 8250, "step2")
+	//utils.AssertEqual(step2(input), 8250, "step2")
 }

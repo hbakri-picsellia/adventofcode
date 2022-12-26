@@ -13,3 +13,7 @@ func Max(x, y int) int {
 func Min(x, y int) int {
 	return int(math.Min(float64(x), float64(y)))
 }
+
+func Pow(x, y int) int {
+	return int(math.Pow(float64(x), float64(y)))
+}

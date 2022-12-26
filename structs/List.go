@@ -2,6 +2,7 @@ package structs
 
 import (
 	"adventofcode/operators"
+	"strconv"
 )
 
 type List[T any] []T
@@ -16,6 +17,19 @@ func (list *List[T]) IsEmpty() bool {
 
 func (list *List[T]) Push(newElements ...T) {
 	*list = append(*list, newElements...)
+}
+
+func (list *List[T]) Insert(index int, element T) {
+	if index == 0 {
+		*list = append([]T{element}, *list...)
+	} else if index == len(*list) {
+		list.Push(element)
+	} else if index > 0 && index < len(*list) {
+		*list = append((*list)[:index+1], (*list)[index:]...)
+		(*list)[index] = element
+	} else {
+		panic("index " + strconv.FormatInt(int64(index), 10) + " out of range " + strconv.FormatInt(int64(len(*list)), 10))
+	}
 }
 
 func (list *List[T]) Pop() (result T, exists bool) {
